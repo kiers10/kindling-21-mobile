@@ -70,14 +70,16 @@ for (let i = 0; i < foo.groupData.length; i++)
 
 export default class mainScreen extends Component {
 
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     name: global.firstName,
-  //     hasError: false,
-  //     errMessage: "",
-  //   };
-  // }
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: global.firstName,
+      hasError: false,
+      errMessage: "",
+      settingModalVisible: false,
+      matchModalVisible: false,
+    };
+  }
 
   renderItem = ({ item }) => {
     return(
@@ -88,11 +90,6 @@ export default class mainScreen extends Component {
       </View>
     )
   }
-
-  state = {
-    settingModalVisible: false,
-    matchModalVisible: false,
-  };
 
   setSettingModalVisible = (visible) => {
     this.setState({...Component, settingModalVisible: visible});
