@@ -69,10 +69,20 @@ for (let i = 0; i < foo.groupData.length; i++)
 // ]
 
 export default class mainScreen extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: global.firstName,
+      hasError: false,
+      errMessage: "",
+    };
+  }
+
   renderItem = ({ item }) => {
     return(
       <View style={{ borderBottomWidth: 1, borderTopWidth: 1, borderColor: "gray", }}>
-        <Text style={{ color: "red", fontWeight: "bold" }}>{item.title}</Text>
+        <Text style={{ color: "#BF4342", fontWeight: "bold" }}>{item.title}</Text>
         <Text>{item.contact}</Text>
         <Text>{item.phone}</Text>
       </View>
@@ -123,7 +133,7 @@ export default class mainScreen extends Component {
 
                 <View style={styles.modalContent}>
                   <Text style={styles.modalHeader}>Name</Text>
-                  <TextInput style={styles.modalInput} placeholder={"Name"}></TextInput>
+                  <TextInput style={styles.modalInput} placeholder={this.getName}></TextInput>
                   <Text style={styles.modalHeader}>Phone Number</Text>
                   <TextInput style={styles.modalInput} placeholder={"Phone Number"} keyboardType={"number-pad"}></TextInput>
                   <Text style={styles.modalHeader}>Description</Text>
@@ -162,14 +172,20 @@ export default class mainScreen extends Component {
             </View>
           </Modal>
           
-          <View style={{ backgroundColor: "blue", width: "90%", height: "25%", borderWidth: 1, borderColor: "white", borderRadius: 1, marginTop: "10%" }}>
+          <View style={{ backgroundColor: "#BF4342", width: "85%", height: "65%", marginTop: "10%" }}>
             <Text style={{ color: "white" }}>This is a test</Text>
-            <Text style={{ color: "#fff" }}>ICarly</Text>
+            <Text style={{ color: "#fff" }}>Kiersten is so cute</Text>
           </View>
         </ImageBackground>
         <StatusBar barStyle="light-content" backgroundColor="white"/>
       </View>
     )
+  }
+
+  getName = async() => {
+    var fullName = global.firstName + " " + global.lastName;
+    console.log(fullName);
+    this.setState({ name: fullName });
   }
 }
 

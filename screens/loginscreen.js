@@ -73,6 +73,9 @@ export default class loginScreen extends Component {
           // If it is then redirect them to fill out rest of profile info
           this.props.navigation.navigate('Info');
         }
+        else
+          this.props.navigation.navigate('MainScreen');
+
 
       }
       else if (res.ready_status_int == 0) {
