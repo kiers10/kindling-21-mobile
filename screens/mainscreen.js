@@ -70,14 +70,14 @@ for (let i = 0; i < foo.groupData.length; i++)
 
 export default class mainScreen extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: global.firstName,
-      hasError: false,
-      errMessage: "",
-    };
-  }
+  // constructor(props) {
+  //   super(props);
+  //   this.state = {
+  //     name: global.firstName,
+  //     hasError: false,
+  //     errMessage: "",
+  //   };
+  // }
 
   renderItem = ({ item }) => {
     return(
@@ -133,7 +133,7 @@ export default class mainScreen extends Component {
 
                 <View style={styles.modalContent}>
                   <Text style={styles.modalHeader}>Name</Text>
-                  <TextInput style={styles.modalInput} placeholder={this.getName}></TextInput>
+                  <TextInput style={styles.modalInput} placeholder={"Name"}></TextInput>
                   <Text style={styles.modalHeader}>Phone Number</Text>
                   <TextInput style={styles.modalInput} placeholder={"Phone Number"} keyboardType={"number-pad"}></TextInput>
                   <Text style={styles.modalHeader}>Description</Text>
@@ -182,11 +182,11 @@ export default class mainScreen extends Component {
     )
   }
 
-  getName = async() => {
-    var fullName = global.firstName + " " + global.lastName;
-    console.log(fullName);
-    this.setState({ name: fullName });
-  }
+  // getName = async() => {
+  //   var fullName = global.firstName + " " + global.lastName;
+  //   console.log(fullName);
+  //   this.setState({ name: fullName });
+  // }
 }
 
 
