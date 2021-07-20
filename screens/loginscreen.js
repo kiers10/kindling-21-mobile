@@ -47,6 +47,68 @@ export default class loginScreen extends Component {
     global.password = val;
   }
 
+  getIndivInfo = async() => {
+    try {
+      var info = {
+        email_str: global.email.trim(),
+        access_token_str: global.accessToken,
+      }
+      var jsonObj = JSON.stringify(info);
+
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_profile_individual', 
+        {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+      var res = JSON.parse(await response.text());
+      
+      // User was successfully registered
+      if (res.success_bool == true) {
+        console.log("Success gathering indiv info");
+        global.accessToken = res.access_token_str;
+        global.fullName = res.display_name_str;
+        global.description = res.description_str;
+        global.phone = res.phone_str;
+        global.accessToken = res.resfreshed_token_str;
+      }
+      else {
+        console.log("Something went wrong when trying to get indiv info");
+      }
+    }
+    catch {
+      console.log("Something went wrong");
+    }
+  }
+
+  getGroupInfo = async() => {
+    try {
+      var info = {
+        email_str: global.email.trim(),
+        access_token_str: global.accessToken,
+      }
+      var jsonObj = JSON.stringify(info);
+
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_profile_group', 
+        {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+      var res = JSON.parse(await response.text());
+      
+      // User was successfully registered
+      if (res.success_bool == true) {
+        console.log("Success gathering group info");
+        global.accessToken = res.access_token_str;
+        global.fullName = res.display_name_str;
+        global.description = res.description_str;
+        global.phone = res.phone_str;
+        global.accessToken = res.resfreshed_token_str;
+      }
+      else {
+        console.log("Something went wrong when trying to get group info");
+      }
+    }
+    catch {
+      console.log("Something went wrong");
+    }
+  }
+
   handleClick = async() => {
     try {
       console.log("Email is: " + global.email + " Password is: " + global.password);
@@ -74,9 +136,15 @@ export default class loginScreen extends Component {
           this.props.navigation.navigate('Info');
         }
         else
+        {
+          // Get profile information:
+          // Project
+          if (global.group == true) {
+            this.getGroupInfo();
+          }
+          // Individual
           this.props.navigation.navigate('MainScreen');
-
-
+        }
       }
       else if (res.ready_status_int == 0) {
         console.log("Credentials are correct, but the account has not been verified");

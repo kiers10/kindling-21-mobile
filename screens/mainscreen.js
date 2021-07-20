@@ -69,11 +69,12 @@ for (let i = 0; i < foo.groupData.length; i++)
 // ]
 
 export default class mainScreen extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
-      name: global.firstName,
+      name: global.fullName,
+      phone: global.phone,
+      description: global.description,
       hasError: false,
       errMessage: "",
       settingModalVisible: false,
@@ -130,10 +131,10 @@ export default class mainScreen extends Component {
 
                 <View style={styles.modalContent}>
                   <Text style={styles.modalHeader}>Name</Text>
-                  <TextInput style={styles.modalInput} placeholder={"Name"}></TextInput>
+                  <TextInput style={styles.modalInput} placeholder={this.state.name}></TextInput>
                   <Text style={styles.modalHeader}>Phone Number</Text>
-                  <TextInput style={styles.modalInput} placeholder={"Phone Number"} keyboardType={"number-pad"}></TextInput>
-                  <Text style={styles.modalHeader}>Description</Text>
+                  <TextInput style={styles.modalInput} placeholder={this.state.phone} keyboardType={"number-pad"}></TextInput>
+                  <Text style={styles.modalHeader} placeholder={this.state.description}>Description</Text>
                   <TextInput style={styles.modalDescription} multiline={true}></TextInput>
 
                   <View style={styles.buttonModal}>
@@ -179,11 +180,11 @@ export default class mainScreen extends Component {
     )
   }
 
-  // getName = async() => {
-  //   var fullName = global.firstName + " " + global.lastName;
-  //   console.log(fullName);
-  //   this.setState({ name: fullName });
-  // }
+  getName = async() => {
+    var fullName = global.firstName + " " + global.lastName;
+    console.log("User's name is " + fullName);
+    this.setState({ name: fullName });
+  }
 }
 
 
