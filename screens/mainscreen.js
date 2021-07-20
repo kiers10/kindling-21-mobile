@@ -169,7 +169,7 @@ export default class mainScreen extends Component {
             </View>
           </Modal>
           
-          <View style={styles.card}>
+          <View style={{ backgroundColor: "#BF4342", width: "85%", height: "65%", marginTop: "10%" }}>
             <Text style={{ color: "white" }}>This is a test</Text>
             <Text style={{ color: "#fff" }}>Kiersten is so cute</Text>
           </View>
@@ -198,6 +198,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
+    
     alignItems: "center"
   },
   row: {
@@ -291,12 +292,5 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
     marginTop: 5,
-  },
-  card: {
-    backgroundColor: "#BF4342",
-    width: "85%",
-    height: "65%", 
-    marginTop: "10%",
-    borderRadius: 10,
   }
 });
