@@ -67,7 +67,9 @@ export default class loginScreen extends Component {
         global.fullName = res.display_name_str;
         global.description = res.description_str;
         global.phone = res.phone_str;
-        global.accessToken = res.resfreshed_token_str;
+        global.accessToken = res.refreshed_token_str;
+
+        this.props.navigation.navigate('MainScreen');
       }
       else {
         console.log("Something went wrong when trying to get indiv info");
@@ -98,7 +100,9 @@ export default class loginScreen extends Component {
         global.fullName = res.display_name_str;
         global.description = res.description_str;
         global.phone = res.phone_str;
-        global.accessToken = res.resfreshed_token_str;
+        global.accessToken = res.refreshed_token_str;
+
+        this.props.navigation.navigate('MainScreen');
       }
       else {
         console.log("Something went wrong when trying to get group info");
@@ -143,7 +147,13 @@ export default class loginScreen extends Component {
             this.getGroupInfo();
           }
           // Individual
-          this.props.navigation.navigate('MainScreen');
+          if (global.group == false) {
+            this.getIndivInfo();
+          }
+          // console.log("setting fullname to: " + global.fullName);
+          // console.log("setting description to: " + global.description);
+          // console.log("setting phone to: " + global.phone);
+          // this.props.navigation.navigate('MainScreen');
         }
       }
       else if (res.ready_status_int == 0) {

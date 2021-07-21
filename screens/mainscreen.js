@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { createStackNavigator, createAppContainer , NavigationContainer } from 'react-navigation';
-import { Pressable, Modal, ImageBackground, Image, StyleSheet, Text, View, TextInput, FlatList } from 'react-native';
+import { Pressable, Modal, ImageBackground, Image, StyleSheet, Text, View, TextInput, FlatList, Keyboard } from 'react-native';
 
 import background from '../assets/background.png';
 import person from '../assets/Person.png';
@@ -133,6 +133,9 @@ export default class mainScreen extends Component {
   }
 
   setSettingModalVisible = (visible) => {
+    console.log("fullName: " + this.state.name);
+    console.log("phone: " + this.state.phone);
+    console.log("description: " + this.state.description);
     this.setState({...Component, settingModalVisible: visible});
   }
 
@@ -141,40 +144,36 @@ export default class mainScreen extends Component {
   }
 
   setTempName = async (val) => {
-    this.tempName = val;
-    console.log(this.tempName);
+    this.setState({ tempName: val });
   }
 
   setTempPhone = async (val) => {
-    this.tempPhone = val;
-    console.log(this.tempPhone);
+    this.setState({ tempPhone: val });
   }
 
   setTempDescription = async (val) => {
-    this.tempDescription = val;
-    console.log(this.tempDescription);
+    this.setState({ tempDescription: val });
   }
 
   handleClick = async() => {
     try {
-      global.fullName = ((this.tempName == "") ? global.fullName : this.tempName.trim());
-      global.phone = ((this.tempPhone == "") ? global.phone : this.tempPhone.trim());
-      global.description = ((this.tempDescription == "") ? global.description : this.tempDescription.trim());
+      if (this.state.tempName.localeCompare("") != 0)
+        global.fullName = this.state.tempName.trim();
+      if (this.state.tempPhone.localeCompare("") != 0)
+        global.phone = this.state.tempPhone.trim();
+      if (this.state.description.localeCompare("") != 0)
+        global.description = this.state.tempDescription.trim();
 
-      console.log(global.fullName);
-      console.log(global.phone);
-      console.log(global.description);
-
-      console.log(this.tempName == "");
-      console.log(this.tempPhone == "");
-      console.log(this.tempDescription == "");
+      console.log("fullname is: " + global.fullName);
+      console.log("phone is: " + global.phone);
+      console.log("description is: " + global.description);
 
       let updateInfo = {
         email_str: global.email.trim(),
         update_fields_obj: {
-          display_name_str: global.fullName.trim(),
-          phone_str: global.phone.trim(),
-          description: global.description.trim(),
+          display_name_str: global.fullName,
+          phone_str: global.phone,
+          description_str: global.description,
         },
         access_token_str: global.accessToken, 
       }
@@ -182,18 +181,15 @@ export default class mainScreen extends Component {
       let jsonObj = JSON.stringify(updateInfo);
 
       const response = await fetch('https://kindling-lp.herokuapp.com/api/update_profile', 
-      {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+        {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
 
       var res = JSON.parse(await response.text());
 
       console.log("success boolean: " + res.success_bool);
-      console.log(res.refreshed_token_str);
+      console.log("refreshed token string "  + res.refreshed_token_str);
 
       if (res.success_bool == true) {
         global.accessToken = res.refreshed_token_str;
-        global.fullName = (this.tempName === undefined) ? global.fullName : this.tempName.trim();
-        global.phone = (this.tempPhone === undefined) ? global.phone : this.tempPhone.trim();
-        global.description = (this.tempDescription === undefined) ? global.description : this.tempDescription.trim();
 
         let nameArr = global.fullName.split(" ");
         global.firstName = nameArr[0];
@@ -206,7 +202,7 @@ export default class mainScreen extends Component {
       }
     }
     catch{
-      console.log("something went wrong with the update_profile API");
+      console.log("Something went wrong with the update_profile API");
     }
   }
 
@@ -244,8 +240,8 @@ export default class mainScreen extends Component {
                   <TextInput style={styles.modalInput} placeholder={this.state.name} onChangeText={(val) => {this.setTempName(val)}}></TextInput>
                   <Text style={styles.modalHeader}>Phone Number</Text>
                   <TextInput style={styles.modalInput} placeholder={this.state.phone} keyboardType={"number-pad"} onChangeText={(val) => {this.setTempPhone(val)}}></TextInput>
-                  <Text style={styles.modalHeader} placeholder={this.state.description}>Description</Text>
-                  <TextInput style={styles.modalDescription} multiline={true} onChangeText={(val) => {this.setTempDescription(val)}}></TextInput>
+                  <Text style={styles.modalHeader}>Description</Text>
+                  <TextInput style={styles.modalDescription} placeholder={this.state.description} multiline={true} onSubmitEditing={Keyboard.dismiss} onChangeText={(val) => {this.setTempDescription(val)}}></TextInput>
 
                   <View style={styles.buttonModal}>
                     <Pressable style={styles.button}>
@@ -297,12 +293,6 @@ export default class mainScreen extends Component {
         <StatusBar barStyle="light-content" backgroundColor="white"/>
       </View>
     )
-  }
-
-  getName = async() => {
-    var fullName = global.firstName + " " + global.lastName;
-    console.log("User's name is " + fullName);
-    this.setState({ name: fullName });
   }
 }
 
@@ -385,19 +375,25 @@ const styles = StyleSheet.create({
     padding: "2%",
     marginBottom: 10,
   },
-  button: {
-    borderRadius: 14,
-    width: "35%",
-    height: "5%",
-    backgroundColor: "#BF4342",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 20,
-    padding: 25,
-  },
   buttonText: {
     color: "white",
-    fontWeight: "bold",
+    fontSize: 18,
+    fontWeight: "bold"
+  },
+  button: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+    backgroundColor: '#BF4342',
+    height: 45,
+    width: 150,
+    borderRadius: 14,
+
+    shadowColor: '#CB1809', // IOS
+    shadowOffset: { height: 1, width: 1 }, // IOS
+    shadowOpacity: 1, // IOS
+    shadowRadius: 4, //IOS
+    elevation: 2, // Android
   },
   buttonModal: {
     justifyContent: "center", 
@@ -444,9 +440,9 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: "row",
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     marginTop: 20,
-    marginRight: 20,
+    marginRight: 10,
   },
   rejectButton: {
     marginRight: "45%",
