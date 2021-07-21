@@ -29,6 +29,7 @@ export default class loginScreen extends Component {
             placeholder={"Password"}
             onChangeText={(val) => {this.setPassword(val)}}
           />
+          <Text style={styles.tiny} onPress={this.passReset}>Forgot your password?</Text>
           <Text style={styles.error}>{this.state.errMessage}</Text>
           <Pressable style={styles.loginButton} onPress={this.handleClick}>
             <Text style={styles.buttonText} onPress={this.handleClick}>Log In</Text>
@@ -37,6 +38,12 @@ export default class loginScreen extends Component {
         <StatusBar barStyle="light-content" backgroundColor="white"/>
       </View>
     )
+  }
+
+  passReset = async() => {
+    // Reset password
+    // Direct them to reset page
+    this.props.navigation.navigate('ForgotPass');
   }
 
   setEmail = async (val) => {
@@ -233,5 +240,11 @@ const styles = StyleSheet.create({
     color: "#E96C6B",
     fontWeight: "bold",
     fontSize: 18,
+  },
+  tiny: {
+    fontSize: 15,
+    color: "white",
+    fontWeight: "bold",
+    paddingTop: 15
   },
 });

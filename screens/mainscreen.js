@@ -192,9 +192,7 @@ export default class mainScreen extends Component {
       var res = JSON.parse(await response.text());
 
       if (res.success_bool == true) {
-        console.log("entered the true state");
         global.accessToken = res.refreshed_token_str;
-        console.log("Change access token");
 
         this.setCandDisplay(res.display_name_str);
         this.setCandDesc(res.description_str);
@@ -206,7 +204,6 @@ export default class mainScreen extends Component {
         console.log("Candidate Description: " + this.state.candDesc);
       }
       else {
-        console.log("entered the false state");
         console.log("Failed at getProfIndiv API");
       }
     }
@@ -339,7 +336,7 @@ export default class mainScreen extends Component {
         global.fullName = this.state.tempName.trim();
       if (this.state.tempPhone.localeCompare("") != 0)
         global.phone = this.state.tempPhone.trim();
-      if (this.state.description.localeCompare("") != 0)
+      if (this.state.tempDescription.localeCompare("") != 0)
         global.description = this.state.tempDescription.trim();
 
       console.log("fullname is: " + global.fullName);
@@ -362,9 +359,6 @@ export default class mainScreen extends Component {
         {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
 
       var res = JSON.parse(await response.text());
-
-      console.log("success boolean: " + res.success_bool);
-      console.log("refreshed token string "  + res.refreshed_token_str);
 
       if (res.success_bool == true) {
         global.accessToken = res.refreshed_token_str;
@@ -448,9 +442,9 @@ export default class mainScreen extends Component {
     }
   }
 
-  componentWillMount(){
-    this.getCand();
-  }
+  // componentWillMount(){
+  //   this.getCand();
+  // }
 
   render() {
     const { settingModalVisible, matchModalVisible } = this.state;
@@ -492,13 +486,12 @@ export default class mainScreen extends Component {
 
                   <View style={styles.buttonModal}>
                     <Pressable style={styles.button}>
-                      <Text style={styles.buttonText} onPress={this.handleClick}>Save Changes</Text>
-                    </Pressable>
-                    <Pressable style={styles.button}>
                       <Text style={styles.buttonText}>Log Out</Text>
                     </Pressable>
+                    <Pressable style={styles.button}>
+                      <Text style={styles.buttonText} onPress={this.handleClick}>Save Changes</Text>
+                    </Pressable>
                   </View>
-
                 </View>
               </View>
             </View>
@@ -646,6 +639,7 @@ const styles = StyleSheet.create({
     justifyContent: "center", 
     alignItems: "center", 
     flexDirection: 'row',
+    justifyContent: "space-between",
   },
   closeButton: {
     fontSize: 30,

@@ -69,7 +69,7 @@ export default class registerScreen extends Component {
             <Text style={styles.error}>{this.state.errMessage}</Text>
             <Pressable style={styles.registerButton} onPress={this.checkPassword}>
               <Text 
-                style={styles.buttonText}>
+                style={styles.buttonText} onPress={this.checkPassword}>
                 Sign up
               </Text>
             </Pressable>
