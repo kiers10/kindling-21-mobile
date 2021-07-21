@@ -481,13 +481,14 @@ export default class mainScreen extends Component {
                   </Pressable>
                 </View>
 
+                {/* FIXME: CHECK WITH KIERSTEN IF WE CAN JUST USE THE GLOBAL VARIABLES FOR THE PLACEHOLDER OR WE NEED TO USE THE STATES*/}
                 <View style={styles.modalContent}>
                   <Text style={styles.modalHeader}>Name</Text>
-                  <TextInput style={styles.modalInput} placeholder={this.state.name} onChangeText={(val) => {this.setTempName(val)}}></TextInput>
+                  <TextInput style={styles.modalInput} placeholder={/* this.state.name */ global.fullName} onChangeText={(val) => {this.setTempName(val)}}></TextInput>
                   <Text style={styles.modalHeader}>Phone Number</Text>
-                  <TextInput style={styles.modalInput} placeholder={this.state.phone} keyboardType={"number-pad"} onChangeText={(val) => {this.setTempPhone(val)}}></TextInput>
+                  <TextInput style={styles.modalInput} placeholder={/* this.state.phone */ global.phone} keyboardType={"number-pad"} onChangeText={(val) => {this.setTempPhone(val)}}></TextInput>
                   <Text style={styles.modalHeader}>Description</Text>
-                  <TextInput style={styles.modalDescription} placeholder={this.state.description} multiline={true} onSubmitEditing={Keyboard.dismiss} onChangeText={(val) => {this.setTempDescription(val)}}></TextInput>
+                  <TextInput style={styles.modalDescription} placeholder={/* this.state.description */ global.description} multiline={true} onSubmitEditing={Keyboard.dismiss} onChangeText={(val) => {this.setTempDescription(val)}}></TextInput>
 
                   <View style={styles.buttonModal}>
                     <Pressable style={styles.button}>
