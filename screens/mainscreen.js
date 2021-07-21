@@ -49,11 +49,7 @@ let foo = {
     "title": "Website",
     "email": "email9@mail.com",
     "phone": "407-999-9999"
-  }, {
-    "title": "Website",
-    "email": "email10@mail.com",
-    "phone": "407-999-9999"
-  },],
+  }, ],
   "new_token": "prank_on_my_crazy_neighbor"
 }
 
@@ -119,6 +115,10 @@ export default class mainScreen extends Component {
       tempName: "",
       tempPhone: "",
       tempDescription: "",
+      candEmail: "",
+      candDisplay: "",
+      candDesc: "",
+      matchesArray: [],
     };
   }
 
@@ -153,6 +153,184 @@ export default class mainScreen extends Component {
 
   setTempDescription = async (val) => {
     this.setState({ tempDescription: val });
+  }
+
+  setCandEmail = async (val) => {
+    this.setState({ candEmail: val });
+  }
+
+  setCandDisplay = async (val) => {
+    this.setState({ candDisplay: val });
+  }
+
+  setCandDesc = async (val) => {
+    this.setState({ candDesc: val });
+  }
+
+  pushMatchesArray = async (val) => {
+    this.setState({ myArray: [this.state.myArray, val] });
+  }
+
+  matchesFunctionOpen = async () => {
+    this.setMatchModalVisible(true);
+    this.getMatch();
+  }
+
+  getProfIndiv = async () => {
+    try {
+
+      let sendInfo = {
+        email_str: this.state.candEmail,
+        access_token_str: global.accessToken,
+      }
+
+      let jsonObj = JSON.stringify(sendInfo);
+
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_profile_individual', 
+      {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+      var res = JSON.parse(await response.text());
+
+      if (res.success_bool == true) {
+        console.log("entered the true state");
+        global.accessToken = res.refreshed_token_str;
+        console.log("Change access token");
+
+        this.setCandDisplay(res.display_name_str);
+        this.setCandDesc(res.description_str);
+
+        // FIXME: ASK DATABASE PERSON TO CHANGE EDIT THE DATABASE SO WE CAN ACTUALLY 
+        // PRINT SOMETHING HERE
+        console.log("Successful GetProfIndiv API");
+        console.log("Candidate Display: " + this.state.candDisplay);
+        console.log("Candidate Description: " + this.state.candDesc);
+      }
+      else {
+        console.log("entered the false state");
+        console.log("Failed at getProfIndiv API");
+      }
+    }
+    catch {
+      console.log("Something went wrong with the get_profile_individual API");
+    }
+  }
+
+  getProfGroup = async () => {
+    try {
+
+      let sendInfo = {
+        email_str: this.state.candEmail,
+        access_token_str: global.accessToken,
+      }
+
+      let jsonObj = JSON.stringify(sendInfo);
+
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_profile_group', 
+      {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+      var res = JSON.parse(await response.text());
+
+      if (res.success_bool == true) {
+        global.accessToken = res.refreshed_token_str;
+
+        this.setCandDisplay(res.display_name_str);
+        this.setCandDesc(res.description_str);
+
+        // FIXME: CAN'T TELL IF THE DISPLAY NAME IS NULL AND THE 
+        // DESCRIPTION IS UNDEFINED BECAUSE OF WHAT IS IN THE DATABASE OR BECAUSE
+        // OF WHAT I'M DOING
+        console.log("Successful GetProfIndiv API");
+        console.log("Candidate Display: " + this.state.candDisplay);
+        console.log("Candidate Description: " + this.state.candDesc);
+      }
+      else {
+        console.log("Failed at getProfIndiv API");
+      }
+    }
+    catch {
+      console.log("Something went wrong with the get_profile_individual API");
+    }
+  }
+
+  getCand = async() => {
+    try {
+      let sendInfo = {
+        email_str: global.email.trim(),
+        is_group_bool: global.group,
+        access_token_str: global.accessToken,
+      }
+
+      let jsonObj = JSON.stringify(sendInfo);
+
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_candidate', 
+      {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+      var res = JSON.parse(await response.text());
+      
+      if (res.success_bool == true) {
+        global.accessToken = res.refreshed_token_str;
+        
+        this.setCandEmail(res.email_str);
+
+        console.log("Candidate email successfully retrived");
+        console.log("Candidate email: " + this.state.candEmail);
+
+        
+        console.log("group bool: " + global.group);
+        if (global.group == true) {
+          this.getProfIndiv();
+          console.log("Got the individual's info!");
+        }
+        else{
+          this.getProfGroup();
+          console.log("Got the group info!");
+        }
+      }
+      else {
+        console.log("Candidate email fail to be retrived");
+      }
+    }
+    catch {
+      console.log("something went wrong with the get_candidate API");
+    }
+  }
+
+  // FIXME: ASK DATABASE PERSON TO ADD MATCHES HERE TO DISPLAY 
+  getMatch = async() => {
+    try {
+      let sendInfo = {
+        email_str: global.email.trim(),
+        output_select_str: 'e',
+        access_token_str: global.accessToken,
+      }
+
+      let jsonObj = JSON.stringify(sendInfo);
+
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_matches', 
+      {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+      var res = JSON.parse(await response.text());
+
+      console.log("parsed JSON");
+
+      global.accessToken = res.refreshed_token_str;
+      console.log("getMatch: " + res.matches_array.length);
+
+      for (let i = 0; i < res.matches_array.length; i++)
+      {
+        let tempObj = new Object;
+        tempObj.title = res.groupData[i].display_name_str;
+        tempObj.email = res.groupData[i].email_str;
+        tempObj.phone = res.GroupData[i].phone_str;
+
+        pushMatchesArray = this.pushMatchesArray(tempObj);
+      }
+
+      console.log("Successfully got matches");
+    }
+    catch{
+      console.log("There was a problem using the get_matches API");
+    }
   }
 
   handleClick = async() => {
@@ -206,6 +384,74 @@ export default class mainScreen extends Component {
     }
   }
 
+  rejectFunction = async() => {
+    try{
+      let sendInfo = {
+        email_str: global.email.trim(),
+        is_group_bool: global.group,
+        target_email_str: this.state.candEmail,
+        access_token_str: global.accessToken,
+      }
+
+      let jsonObj = JSON.stringify(sendInfo);
+
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_candidate', 
+      {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+      var res = JSON.parse(await response.text());
+
+      if (res.success_bool == true) {
+        global.accessToken = res.refreshed_token_str;
+        console.log("Successfully rejected, about to get new candidate!");
+        this.getCand();
+      }
+      else {
+        console.log("Rejecting was a failure");
+      }
+    }
+    catch {
+      console.log("Something went wrong with the swipe_left API");
+    }
+  }
+
+  acceptFunction = async() => {
+    try{
+      let sendInfo = {
+        email_str: global.email.trim(),
+        is_group_bool: global.group,
+        target_email_str: this.state.candEmail,
+        access_token_str: global.accessToken,
+      }
+
+      let jsonObj = JSON.stringify(sendInfo);
+
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_candidate', 
+      {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+      var res = JSON.parse(await response.text());
+
+      if (res.success_bool == true) {
+        global.accessToken = res.refreshed_token_str;
+
+        // FIXME: DON'T KNOW WHAT TO DO WITH THE match_bool here
+
+        console.log("Successfully accepted");
+        console.log("Value of match_bool: " + res.match_bool);
+        this.getCand();
+      }
+      else {
+        console.log("Accepting was a failure");
+      }
+    }
+    catch {
+      console.log("Something went wrong with the swipe_right API");
+    }
+  }
+
+  componentWillMount(){
+    this.getCand();
+  }
+
   render() {
     const { settingModalVisible, matchModalVisible } = this.state;
     return (
@@ -219,7 +465,7 @@ export default class mainScreen extends Component {
 
             <Image source={logo} style={styles.logo}></Image>
 
-            <Pressable style={styles.menu} onPress={() => this.setMatchModalVisible(true)}>
+            <Pressable style={styles.menu} onPress={() => this.matchesFunctionOpen()}>
               <Image source={menu}></Image>
             </Pressable>
           </View>
@@ -268,7 +514,7 @@ export default class mainScreen extends Component {
                 </View>
 
                 <FlatList style={styles.flatListStyle}
-                  data={matches}
+                  data={this.state.matchesArray}
                   renderItem={this.renderItem}
                   keyExtractor={item => item.email}
                 />
@@ -277,15 +523,15 @@ export default class mainScreen extends Component {
           </Modal>
           
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>{cand.display_name_str}</Text>
-            <Text style={styles.cardDescription}>{cand.description_str}</Text>
+            <Text style={styles.cardTitle}>{this.state.candDisplay}</Text>
+            <Text style={styles.cardDescription}>{this.state.candDesc}</Text>
           </View>
 
           <View style={styles.buttonRow}>
-            <Pressable style={styles.rejectButton}>
+            <Pressable style={styles.rejectButton} onPress={() => this.rejectFunction()}>
               <Image source={reject}></Image>
             </Pressable>
-            <Pressable style={styles.acceptButton}>
+            <Pressable style={styles.acceptButton} onPress={() => this.acceptFunction()}>
               <Image source={accept}></Image>
             </Pressable>
           </View>
