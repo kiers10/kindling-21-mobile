@@ -442,9 +442,9 @@ export default class mainScreen extends Component {
     }
   }
 
-  // componentWillMount(){
-  //   this.getCand();
-  // }
+  componentDidMount(){
+    this.getCand();
+  }
 
   render() {
     const { settingModalVisible, matchModalVisible } = this.state;
