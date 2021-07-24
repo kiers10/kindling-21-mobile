@@ -506,6 +506,10 @@ export default class mainScreen extends Component {
 
   render() {
     const { settingModalVisible, matchModalVisible } = this.state;
+    const config = {
+      velocityThreshold: 0.3,
+      directionalOffsetThreshold: 80
+    };
     return (
       <View style={styles.container}>
         <ImageBackground source={background} style={styles.background}>
@@ -575,6 +579,12 @@ export default class mainScreen extends Component {
           </Modal>
           
           <GestureRecognizer>
+            {/* onSwipe={(direction, state) => this.onSwipe(direction, state)} */}
+            {/* onSwipeUp={(state) => this.onSwipeUp(state)} */}
+            {/* onSwipeDown={(state) => this.onSwipeDown(state)} */}
+            {/* onSwipeLeft={(state) => this.onSwipeLeft(state)} */}
+            {/* onSwipeRight={(state) => this.onSwipeRight(state)} */}
+            {/* config={config} */}
             <View style={styles.card}>
               <Text style={styles.cardTitle}>{this.state.candDisplay}</Text>
               <Text style={styles.cardDescription}>{this.state.candDesc}</Text>
@@ -594,6 +604,41 @@ export default class mainScreen extends Component {
       </View>
     )
   }
+
+  // onSwipe(gestureName, gestureState) {
+  //   const {SWIPE_UP, SWIPE_DOWN, SWIPE_LEFT, SWIPE_RIGHT} = swipeDirections;
+  //   this.setState({gestureName: gestureName});
+  //   switch (gestureName) {
+  //     case SWIPE_UP:
+  //       console.log("Swiped up");
+  //       break;
+  //     case SWIPE_DOWN:
+  //       console.log("Swiped down");
+  //       break;
+  //     case SWIPE_LEFT:
+  //       console.log("Swiped left");
+  //       break;
+  //     case SWIPE_RIGHT:
+  //       console.log("Swiped right");
+  //       break;
+  //   }
+  // }
+
+  // onSwipeUp(gestureState) {
+  //   console.log("Swiped up");
+  // }
+
+  // onSwipeDown(gestureState) {
+  //   console.log("Swiped down");
+  // }
+
+  // onSwipeLeft(gestureState) {
+  //   console.log("Swiped left");
+  // }
+
+  // onSwipeRight(gestureState) {
+  //   console.log("Swiped right");
+  // }
 }
 
 

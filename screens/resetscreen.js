@@ -22,11 +22,13 @@ export default class resetScreen extends Component {
           <TextInput
               style={styles.input}
               placeholder={"Password"}
+              secureTextEntry={true}
               onChangeText={(val) => {this.setPassword(val)}}
             />
             <TextInput
                 style={styles.input}
                 placeholder={"Confirm Password"}
+                secureTextEntry={true}
                 onChangeText={(val) => {this.setConfirmPassword(val)}}
             /> 
           <Text style={styles.error}>{this.state.errMessage}</Text>

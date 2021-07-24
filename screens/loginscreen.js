@@ -27,6 +27,7 @@ export default class loginScreen extends Component {
           <TextInput
             style={styles.input}
             placeholder={"Password"}
+            secureTextEntry={true}
             onChangeText={(val) => {this.setPassword(val)}}
           />
           <Text style={styles.tiny} onPress={this.passReset}>Forgot your password?</Text>
