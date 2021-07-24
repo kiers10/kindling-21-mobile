@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { createStackNavigator, createAppContainer , NavigationContainer } from 'react-navigation';
 import { Pressable, Modal, ImageBackground, Image, StyleSheet, Text, View, TextInput, FlatList, Keyboard } from 'react-native';
+import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
 import background from '../assets/background.png';
 import person from '../assets/Person.png';
@@ -49,7 +50,16 @@ let foo = {
     "title": "Website",
     "email": "email9@mail.com",
     "phone": "407-999-9999"
-  }, ],
+  },  {
+    "title": "Website",
+    "email": "email10@mail.com",
+    "phone": "407-999-9999"
+  },
+  {
+    "title": "Website",
+    "email": "email11@mail.com",
+    "phone": "407-999-9999"
+  },],
   "new_token": "prank_on_my_crazy_neighbor"
 }
 
@@ -132,6 +142,50 @@ export default class mainScreen extends Component {
     )
   }
 
+  logOutFunction = async() => {
+    try {
+      global.email = "";
+      global.password = "";
+      global.confirmPass = "";
+      global.firstName = "";
+      global.lastName = "";
+      global.fullName = "";
+      global.phone = "";
+
+      // Variable to keep track of which group the user wants to join
+      // True: Project
+      // False: Individual
+      global.group = true;
+
+      // Variable to store the user's unique access token
+      global.accessToken = "";
+
+      global.verifyCode = "";
+
+      global.gameDev = false;
+      global.marketing = false;
+      global.appDev = false;
+      global.networking = false;
+      global.webDev = false;
+      global.construction = false;
+      global.robotics = false;
+      global.labPartners = false;
+      global.graphicDesign = false;
+      global.research = false;
+      global.writer = false;
+      global.other = false;
+
+      global.description = "";
+
+      this.props.navigation.navigate('Home');
+
+      console.log("Successsfully logged out!");
+    }
+    catch {
+      console.log("Did not successfully logged out :(");
+    }
+  }
+
   setSettingModalVisible = (visible) => {
     console.log("fullName: " + this.state.name);
     console.log("phone: " + this.state.phone);
@@ -168,10 +222,18 @@ export default class mainScreen extends Component {
   }
 
   pushMatchesArray = async (val) => {
-    this.setState({ myArray: [this.state.myArray, val] });
+    // this.setState({ myArray: [this.state.myArray, val] });
+    this.setState({ matchesArray: [...this.state.matchesArray, val] });
+    // this.setState({ matchesArray: val });
+    // this.state.matchesArray.push(val);
+  }
+
+  resetMatchesArray = async() => {
+    this.setState({matchesArray: []});
   }
 
   matchesFunctionOpen = async () => {
+    this.resetMatchesArray();
     this.setMatchModalVisible(true);
     this.getMatch();
   }
@@ -197,8 +259,6 @@ export default class mainScreen extends Component {
         this.setCandDisplay(res.display_name_str);
         this.setCandDesc(res.description_str);
 
-        // FIXME: ASK DATABASE PERSON TO CHANGE EDIT THE DATABASE SO WE CAN ACTUALLY 
-        // PRINT SOMETHING HERE
         console.log("Successful GetProfIndiv API");
         console.log("Candidate Display: " + this.state.candDisplay);
         console.log("Candidate Description: " + this.state.candDesc);
@@ -233,9 +293,6 @@ export default class mainScreen extends Component {
         this.setCandDisplay(res.display_name_str);
         this.setCandDesc(res.description_str);
 
-        // FIXME: CAN'T TELL IF THE DISPLAY NAME IS NULL AND THE 
-        // DESCRIPTION IS UNDEFINED BECAUSE OF WHAT IS IN THE DATABASE OR BECAUSE
-        // OF WHAT I'M DOING
         console.log("Successful GetProfIndiv API");
         console.log("Candidate Display: " + this.state.candDisplay);
         console.log("Candidate Description: " + this.state.candDesc);
@@ -249,6 +306,8 @@ export default class mainScreen extends Component {
     }
   }
 
+  // FIXME: ASK PEYTON IF THE CANDIDATE API IS GETTING A NEW CANDIDATE SINCE I'M JUST
+  // GETTIN THE SAME ONE
   getCand = async() => {
     try {
       let sendInfo = {
@@ -292,7 +351,6 @@ export default class mainScreen extends Component {
     }
   }
 
-  // FIXME: ASK DATABASE PERSON TO ADD MATCHES HERE TO DISPLAY 
   getMatch = async() => {
     try {
       let sendInfo = {
@@ -316,11 +374,11 @@ export default class mainScreen extends Component {
       for (let i = 0; i < res.matches_array.length; i++)
       {
         let tempObj = new Object;
-        tempObj.title = res.groupData[i].display_name_str;
-        tempObj.email = res.groupData[i].email_str;
-        tempObj.phone = res.GroupData[i].phone_str;
+        tempObj.title = res.matches_array[i].display_name_str;
+        tempObj.email = res.matches_array[i].email_str;
+        tempObj.phone = res.matches_array[i].phone_str;
 
-        pushMatchesArray = this.pushMatchesArray(tempObj);
+        this.pushMatchesArray(tempObj);
       }
 
       console.log("Successfully got matches");
@@ -486,7 +544,7 @@ export default class mainScreen extends Component {
 
                   <View style={styles.buttonModal}>
                     <Pressable style={styles.button}>
-                      <Text style={styles.buttonText}>Log Out</Text>
+                      <Text style={styles.buttonText} onPress={this.logOutFunction}>Log Out</Text>
                     </Pressable>
                     <Pressable style={styles.button}>
                       <Text style={styles.buttonText} onPress={this.handleClick}>Save Changes</Text>
@@ -516,10 +574,12 @@ export default class mainScreen extends Component {
             </View>
           </Modal>
           
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>{this.state.candDisplay}</Text>
-            <Text style={styles.cardDescription}>{this.state.candDesc}</Text>
-          </View>
+          <GestureRecognizer>
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>{this.state.candDisplay}</Text>
+              <Text style={styles.cardDescription}>{this.state.candDesc}</Text>
+            </View>
+          </GestureRecognizer>
 
           <View style={styles.buttonRow}>
             <Pressable style={styles.rejectButton} onPress={() => this.rejectFunction()}>
@@ -661,7 +721,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   flatListStyle: {
-    height: "95%",
+    height: "87%",
   },
   cardTitle: {
     color: "white",

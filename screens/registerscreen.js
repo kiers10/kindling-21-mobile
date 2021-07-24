@@ -35,6 +35,7 @@ export default class registerScreen extends Component {
             />
             <TextInput
               style={styles.input}
+              keyboardType={"number-pad"}
               placeholder={"Phone Number"}
               onChangeText={(val) => {this.setPhone(val)}}
             />
