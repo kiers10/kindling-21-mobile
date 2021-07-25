@@ -2,7 +2,6 @@ import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { createStackNavigator, createAppContainer , NavigationContainer } from 'react-navigation';
 import { Pressable, Modal, ImageBackground, Image, StyleSheet, Text, View, TextInput, FlatList, Keyboard } from 'react-native';
-import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
 import background from '../assets/background.png';
 import person from '../assets/Person.png';
@@ -582,18 +581,10 @@ export default class mainScreen extends Component {
             </View>
           </Modal>
           
-          <GestureRecognizer>
-            {/* onSwipe={(direction, state) => this.onSwipe(direction, state)} */}
-            {/* onSwipeUp={(state) => this.onSwipeUp(state)} */}
-            {/* onSwipeDown={(state) => this.onSwipeDown(state)} */}
-            {/* onSwipeLeft={(state) => this.onSwipeLeft(state)} */}
-            {/* onSwipeRight={(state) => this.onSwipeRight(state)} */}
-            {/* config={config} */}
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>{this.state.candDisplay}</Text>
-              <Text style={styles.cardDescription}>{this.state.candDesc}</Text>
-            </View>
-          </GestureRecognizer>
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>{this.state.candDisplay}</Text>
+            <Text style={styles.cardDescription}>{this.state.candDesc}</Text>
+          </View>
 
           <View style={styles.buttonRow}>
             <Pressable style={styles.rejectButton} onPress={() => this.rejectFunction()}>
