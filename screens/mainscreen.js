@@ -371,6 +371,10 @@ export default class mainScreen extends Component {
       global.accessToken = res.refreshed_token_str;
       console.log("getMatch: " + res.matches_array.length);
 
+      if (res.matches_array.length == 0) {
+        this.setCandDisplay("No candidates left to swipe on");
+      }
+
       for (let i = 0; i < res.matches_array.length; i++)
       {
         let tempObj = new Object;
@@ -440,14 +444,14 @@ export default class mainScreen extends Component {
     try{
       let sendInfo = {
         email_str: global.email.trim(),
-        is_group_bool: global.group,
+        // is_group_bool: global.group,
         target_email_str: this.state.candEmail,
         access_token_str: global.accessToken,
       }
 
       let jsonObj = JSON.stringify(sendInfo);
 
-      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_candidate', 
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/swipe_left', 
       {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
 
       var res = JSON.parse(await response.text());
@@ -470,14 +474,14 @@ export default class mainScreen extends Component {
     try{
       let sendInfo = {
         email_str: global.email.trim(),
-        is_group_bool: global.group,
+        // is_group_bool: global.group,
         target_email_str: this.state.candEmail,
         access_token_str: global.accessToken,
       }
 
       let jsonObj = JSON.stringify(sendInfo);
 
-      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_candidate', 
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/swipe_right', 
       {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
 
       var res = JSON.parse(await response.text());
