@@ -336,13 +336,14 @@ export default class mainScreen extends Component {
           this.getProfIndiv();
           console.log("Got the individual's info!");
         }
-        else{
+        else {
           this.getProfGroup();
           console.log("Got the group info!");
         }
       }
       else {
-        console.log("Candidate email fail to be retrived");
+        console.log("No candidates left");
+        this.setCandDisplay("No candidates left to swipe on");
       }
     }
     catch {
@@ -369,10 +370,6 @@ export default class mainScreen extends Component {
 
       global.accessToken = res.refreshed_token_str;
       console.log("getMatch: " + res.matches_array.length);
-
-      if (res.matches_array.length == 0) {
-        this.setCandDisplay("No candidates left to swipe on");
-      }
 
       for (let i = 0; i < res.matches_array.length; i++)
       {
