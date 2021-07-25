@@ -101,7 +101,8 @@ export default class registerScreen extends Component {
     try {
       // console.log("Sending email: " + global.email + " and password: " + global.password);
       var displayName = global.firstName + " " + global.lastName;
-
+      global.fullName = displayName;
+      
       var registerInfo = {
         email_str: global.email.trim(),
         password_str: global.password.trim(),

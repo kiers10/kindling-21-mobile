@@ -319,6 +319,14 @@ export default class mainScreen extends Component {
     }
   }
 
+  handleYup () {
+    this.acceptFunction();
+  }
+
+  handleNope () {
+    this.rejectFunction();
+  }
+
   // FIXME: ASK PEYTON IF THE CANDIDATE API IS GETTING A NEW CANDIDATE SINCE I'M JUST
   // GETTIN THE SAME ONE
   getCand = async() => {
