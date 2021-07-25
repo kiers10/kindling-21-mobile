@@ -3,6 +3,7 @@ global.password = "";
 global.confirmPass = "";
 global.firstName = "";
 global.lastName = "";
+global.fullName = "";
 global.phone = "";
 
 // Variable to keep track of which group the user wants to join

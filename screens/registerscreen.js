@@ -35,6 +35,7 @@ export default class registerScreen extends Component {
             />
             <TextInput
               style={styles.input}
+              keyboardType={"number-pad"}
               placeholder={"Phone Number"}
               onChangeText={(val) => {this.setPhone(val)}}
             />
@@ -46,15 +47,17 @@ export default class registerScreen extends Component {
             <TextInput
               style={styles.input}
               placeholder={"Password"}
+              secureTextEntry={true}
               onChangeText={(val) => {this.setPassword(val)}}
             />
             <TextInput
               style={styles.input}
               placeholder={"Confirm Password"}
+              secureTextEntry={true}
               onChangeText={(val) => {this.setConfirmPassword(val)}}
             /> 
             <Text style={styles.groupTitle}>What are you looking for?</Text>
-            <Text style={[styles.toggleText, styles.projectText]}>Project</Text>
+            <Text style={[styles.toggleText, styles.individualText]}>Individual</Text>
             <Switch
               style={styles.toggle}
               trackColor={{ false: "#FFA347", true: "#BF4342" }}
@@ -65,11 +68,11 @@ export default class registerScreen extends Component {
               value={this.state.isEnabled}
               >
             </Switch>
-            <Text style={[styles.toggleText, styles.individualText]}>Individual</Text>
+            <Text style={[styles.toggleText, styles.projectText]}>Project</Text>
             <Text style={styles.error}>{this.state.errMessage}</Text>
             <Pressable style={styles.registerButton} onPress={this.checkPassword}>
               <Text 
-                style={styles.buttonText}>
+                style={styles.buttonText} onPress={this.checkPassword}>
                 Sign up
               </Text>
             </Pressable>
@@ -291,11 +294,11 @@ const styles = StyleSheet.create({
   },
   projectText: {
     color: "#E25150",
-    marginRight: 20,
+    marginLeft: 20,
   },
   individualText: {
     color: "#FFA347",
-    marginLeft: 20,
+    marginRight: 20,
   },
   error: {
     textAlign: "center",

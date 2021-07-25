@@ -10,6 +10,9 @@ import infoScreen from './screens/infoscreen'
 import verifyScreen from './screens/verifyscreen';
 import descriptionScreen from './screens/description';
 import mainScreen from './screens/mainscreen';
+import passResetScreen from './screens/passwordscreen';
+import forgotScreen from './screens/forgotscreen';
+import resetScreen from './screens/resetscreen';
 
 export default class App extends React.Component {
   render() {
@@ -67,7 +70,31 @@ const AppNavigator = createStackNavigator({
     navigationOptions: {
       headerShown: false,
     }
-  }
+  },
+  ForgotPass: {
+    screen: forgotScreen,
+    navigationOptions: {
+      title: "",
+      headerTransparent: true,
+      headerTintColor: "white",
+    }
+  },
+  NewPass: {
+    screen: resetScreen,
+    navigationOptions: {
+      title: "",
+      headerTransparent: true,
+      headerTintColor: "white",
+    }
+  },
+  PassReset: {
+    screen: passResetScreen,
+    navigationOptions: {
+      title: "",
+      headerTransparent: true,
+      headerTintColor: "white",
+    }
+  },
 },
 {  
   initialRouteName: "Home"

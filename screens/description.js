@@ -77,6 +77,7 @@ export default class descriptionScreen extends Component {
       if (res.success_bool == true) {
         global.accessToken = res.refreshed_token_str;
         console.log("Setting profile info successful");
+        this.props.navigation.navigate('MainScreen');
       }
       else {
         console.log("Setting profile info unsuccessful");
