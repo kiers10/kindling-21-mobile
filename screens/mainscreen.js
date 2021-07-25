@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { createStackNavigator, createAppContainer , NavigationContainer } from 'react-navigation';
 import { Pressable, Modal, ImageBackground, Image, StyleSheet, Text, View, TextInput, FlatList, Keyboard } from 'react-native';
+import SwipeCards from 'react-native-swipe-cards';
 
 import background from '../assets/background.png';
 import person from '../assets/Person.png';
@@ -128,6 +129,10 @@ export default class mainScreen extends Component {
       candDisplay: "",
       candDesc: "",
       matchesArray: [],
+      candArray: [
+                  {test: "test"},
+                  {test: "word"}
+                ]
     };
   }
 
@@ -137,6 +142,15 @@ export default class mainScreen extends Component {
         <Text style={{ color: "#BF4342", fontWeight: "bold" }}>{item.title}</Text>
         <Text>{item.email}</Text>
         <Text>{item.phone}</Text>
+      </View>
+    )
+  }
+
+  renderCard = ({}) => {
+    return(
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>{this.state.candDisplay}</Text>
+        <Text style={styles.cardDescription}>{this.state.candDesc}</Text>
       </View>
     )
   }
@@ -344,6 +358,7 @@ export default class mainScreen extends Component {
       else {
         console.log("No candidates left");
         this.setCandDisplay("No candidates left to swipe on");
+        this.setCandDesc("");
       }
     }
     catch {
@@ -577,11 +592,15 @@ export default class mainScreen extends Component {
               </View>
             </View>
           </Modal>
-          
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>{this.state.candDisplay}</Text>
-            <Text style={styles.cardDescription}>{this.state.candDesc}</Text>
-          </View>
+
+          <SwipeCards style={styles.swipeStyle}
+            cards={this.state.candArray}
+            renderCard={this.renderCard}
+            handleYup={this.acceptFunction}
+            handleNope={this.rejectFunction}
+            loop={true}
+            onClickHandler={() => {console.log("")}}
+          />
 
           <View style={styles.buttonRow}>
             <Pressable style={styles.rejectButton} onPress={() => this.rejectFunction()}>
@@ -714,8 +733,10 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#BF4342", 
-    width: "85%", 
-    height: "65%", 
+    // width: "85%", 
+    width: 350,
+    // height: "65%",
+    height: 500, 
     marginTop: "10%",
     borderRadius: 10,
     padding: 10,
@@ -752,5 +773,8 @@ const styles = StyleSheet.create({
   },
   acceptButton: {
     marginTop: 15,
+  },
+  swipeStyle: {
+
   }
 });

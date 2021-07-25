@@ -13,6 +13,7 @@ import mainScreen from './screens/mainscreen';
 import passResetScreen from './screens/passwordscreen';
 import forgotScreen from './screens/forgotscreen';
 import resetScreen from './screens/resetscreen';
+import testswipe from './screens/testswipe';
 
 export default class App extends React.Component {
   render() {
@@ -21,6 +22,9 @@ export default class App extends React.Component {
 }
 
 const AppNavigator = createStackNavigator({  
+  testswipe: {
+    screen: testswipe
+  },
   Home: {    
     screen: homeScreen,
     navigationOptions: {
@@ -98,6 +102,7 @@ const AppNavigator = createStackNavigator({
 },
 {  
   initialRouteName: "Home"
+  // initialRouteName: "testswipe"
 }
 );
 
