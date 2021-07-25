@@ -599,41 +599,6 @@ export default class mainScreen extends Component {
       </View>
     )
   }
-
-  // onSwipe(gestureName, gestureState) {
-  //   const {SWIPE_UP, SWIPE_DOWN, SWIPE_LEFT, SWIPE_RIGHT} = swipeDirections;
-  //   this.setState({gestureName: gestureName});
-  //   switch (gestureName) {
-  //     case SWIPE_UP:
-  //       console.log("Swiped up");
-  //       break;
-  //     case SWIPE_DOWN:
-  //       console.log("Swiped down");
-  //       break;
-  //     case SWIPE_LEFT:
-  //       console.log("Swiped left");
-  //       break;
-  //     case SWIPE_RIGHT:
-  //       console.log("Swiped right");
-  //       break;
-  //   }
-  // }
-
-  // onSwipeUp(gestureState) {
-  //   console.log("Swiped up");
-  // }
-
-  // onSwipeDown(gestureState) {
-  //   console.log("Swiped down");
-  // }
-
-  // onSwipeLeft(gestureState) {
-  //   console.log("Swiped left");
-  // }
-
-  // onSwipeRight(gestureState) {
-  //   console.log("Swiped right");
-  // }
 }
 
 
