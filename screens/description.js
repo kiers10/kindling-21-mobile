@@ -4,14 +4,14 @@ import { createStackNavigator, createAppContainer, NavigationContainer } from 'r
 import { Pressable, Button, TextInput, ImageBackground, Image, StyleSheet, Text, View, Keyboard } from 'react-native';
 import background from '../assets/background.png';
 
-const project = global.group;
+// const project = global.group;
 
 export default class descriptionScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
         <ImageBackground source={background} style={styles.background}> 
-          <Text style={styles.title}>{project ? "Describe your project" : "Describe yourself"}</Text>
+          <Text style={styles.title}>{global.group ? "Describe your project" : "Describe yourself"}</Text>
           <TextInput
             style={styles.input} multiline={true} editable={true}
             onChangeText={(val) => {this.setDescription(val)}}
@@ -31,24 +31,11 @@ export default class descriptionScreen extends Component {
     global.description = val;
   }
 
-  handleClick = async() => {
-    // console.log("Trying to initialize profile with access token: " + global.accessToken);
+  initializeGroup = async() => {
     try {
       var profileInfo = {
         email_str: global.email.trim(),
         group_categories_obj: {
-          game_development_bool: global.gameDev,
-          app_development_bool: global.appDev,
-          web_development_bool: global.webDev,
-          robotics_bool: global.robotics,
-          graphic_design_bool: global.graphicDesign,
-          writer_bool: global.writer,
-          marketing_bool: global.marketing,
-          networking_bool: global.networking,
-          construction_bool: global.construction,
-          lab_partners_bool: global.labPartners,
-          research_bool: global.research,
-          other_bool: global.other
         },
         description_str: global.description,
         candidate_individual_categories_obj: {
@@ -85,6 +72,61 @@ export default class descriptionScreen extends Component {
     }
     catch {
       console.log("Something went wrong");
+    }
+  }
+
+  initializeIndiv = async() => {
+    try {
+      var profileInfo = {
+        email_str: global.email.trim(),
+        individual_categories_obj: {
+        },
+        description_str: global.description,
+        candidate_group_categories_obj: {
+          game_development_bool: global.gameDev,
+          app_development_bool: global.appDev,
+          web_development_bool: global.webDev,
+          robotics_bool: global.robotics,
+          graphic_design_bool: global.graphicDesign,
+          writer_bool: global.writer,
+          marketing_bool: global.marketing,
+          networking_bool: global.networking,
+          construction_bool: global.construction,
+          lab_partners_bool: global.labPartners,
+          research_bool: global.research,
+          other_bool: global.other
+        },
+        access_token_str: global.accessToken,
+      }
+      var jsonObj = JSON.stringify(profileInfo);
+
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/initialize_profile_individual', 
+        {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+      var res = JSON.parse(await response.text());
+
+      if (res.success_bool == true) {
+        global.accessToken = res.refreshed_token_str;
+        console.log("Setting profile info successful");
+        this.props.navigation.navigate('MainScreen');
+      }
+      else {
+        console.log("Setting profile info unsuccessful");
+      }
+    }
+    catch {
+      console.log("Something went wrong");
+    }
+  }
+
+  handleClick = async() => {
+    if (global.group == true) {
+      console.log("User signed up as project");
+      this.initializeGroup();
+    }
+    else {
+      console.log("User signed up as individual");
+      this.initializeIndiv();
     }
   }
 }
