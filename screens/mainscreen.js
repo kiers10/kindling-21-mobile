@@ -126,6 +126,15 @@ export default class mainScreen extends Component {
   setTempName = async (val) => {
     this.setState({ tempName: val });
   }
+  
+  // Turn phone number string into a general format.
+  phoneNumberIfy = async(val) => {
+    let num = val.replaceAll(/\D/g, "");
+    if (num.length === 10)
+      this.setTempPhone(`(${num.substring(0,3)}) ${num.substring(3,6)}-${num.substring(6)}`);
+    else
+      this.setTempPhone(val);
+  }
 
   setTempPhone = async (val) => {
     this.setState({ tempPhone: val });
@@ -419,6 +428,7 @@ export default class mainScreen extends Component {
         global.lastName = nameArr[1];
 
         console.log("Profile info updated successfully");
+        this.setSettingModalVisible(false);
       }
       else {
         console.log("Profile info updated failed :(");
@@ -550,7 +560,7 @@ export default class mainScreen extends Component {
                   <Text style={styles.modalHeader}>Name</Text>
                   <TextInput style={styles.modalInput} placeholder={/* this.state.name */ global.fullName} onChangeText={(val) => {this.setTempName(val)}}></TextInput>
                   <Text style={styles.modalHeader}>Phone Number</Text>
-                  <TextInput style={styles.modalInput} placeholder={/* this.state.phone */ global.phone} keyboardType={"number-pad"} onChangeText={(val) => {this.setTempPhone(val)}}></TextInput>
+                  <TextInput style={styles.modalInput} placeholder={/* this.state.phone */ global.phone} keyboardType={"number-pad"} onChangeText={(val) => {this.phoneNumberIfy(val)}}></TextInput>
                   <Text style={styles.modalHeader}>Description</Text>
                   <TextInput style={styles.modalDescription} placeholder={/* this.state.description */ global.description} multiline={true} onSubmitEditing={Keyboard.dismiss} onChangeText={(val) => {this.setTempDescription(val)}}></TextInput>
 

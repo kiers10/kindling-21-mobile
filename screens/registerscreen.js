@@ -37,7 +37,7 @@ export default class registerScreen extends Component {
               style={styles.input}
               keyboardType={"number-pad"}
               placeholder={"Phone Number"}
-              onChangeText={(val) => {this.setPhone(val)}}
+              onChangeText={(val) => {this.phoneNumberIfy(val)}}
             />
             <TextInput
               style={styles.input}
@@ -171,6 +171,15 @@ export default class registerScreen extends Component {
 
   setLast = async (val) => {
     global.lastName = val;
+  }
+
+  // Turn phone number string into a general format.
+  phoneNumberIfy = async(val) => {
+    let num = val.replaceAll(/\D/g, "");
+    if (num.length === 10)
+      this.setPhone(`(${num.substring(0,3)}) ${num.substring(3,6)}-${num.substring(6)}`);
+    else
+      this.setPhone(val);
   }
 
   setPhone = async (val) => {
