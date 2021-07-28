@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native';
+import {StyleSheet, Text, View, Image, LogBox} from 'react-native';
 
 import SwipeCards from 'react-native-swipe-cards';
 
@@ -37,16 +37,19 @@ export default class testswipe extends React.Component {
     this.state = {
       cards: [
         {text: 'Tomato', backgroundColor: 'red'},
-        {text: 'Aubergine', backgroundColor: 'purple'},
-        {text: 'Courgette', backgroundColor: 'green'},
-        {text: 'Blueberry', backgroundColor: 'blue'},
-        {text: 'Umm...', backgroundColor: 'cyan'},
-        {text: 'orange', backgroundColor: 'orange'},
+        // {text: 'Aubergine', backgroundColor: 'purple'},
+        // {text: 'Courgette', backgroundColor: 'green'},
+        // {text: 'Blueberry', backgroundColor: 'blue'},
+        // {text: 'Umm...', backgroundColor: 'cyan'},
+        // {text: 'orange', backgroundColor: 'orange'},
       ],
       word: "Joseph",
-      color: "gray"
+      color: "gray",
+      cardNum: 3,
+      foo: true,
     };
     this.handleNope = this.handleNope.bind(this);
+    this.handleYup = this.handleYup.bind(this);
   }
 
   renderItem = ({}) => {
@@ -60,11 +63,15 @@ export default class testswipe extends React.Component {
   handleYup (card) {
     console.log(`Yup for ${card.text}`)
 
-    let obj = new Object;
-    obj.text = 'crazyLine';
-    obj.backgroundColor = 'gray';
+    this.setState({cardNum: this.state.cardNum - 1 });
 
-    console.log("Object count: " + this.cards.length);
+    if (this.state.cardNum <= 0 || card.text === "Tomato")
+      this.setState({foo: false});
+
+    console.log("Number of cards: " + this.state.cardNum);
+    console.log("foo value: " + this.state.foo);
+
+    // console.log("Object count: " + this.cards.length);
     // this.pushy(obj);
 
     // let obj = new Object;
@@ -110,7 +117,7 @@ s
         handleNope={this.handleNope}
         handleMaybe={this.handleMaybe}
         hasMaybeAction
-        loop={true}
+        loop={this.state.foo}
       />
     )
   }

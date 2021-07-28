@@ -131,9 +131,11 @@ export default class mainScreen extends Component {
       matchesArray: [],
       candArray: [
                   {test: "test"},
-                  {test: "word"}
-                ]
+      ],
+      swipePerm: true,
     };
+    this.handleYup = this.handleYup.bind(this);
+    this.acceptFunction = this.acceptFunction.bind(this);
   }
 
   renderItem = ({ item }) => {
@@ -146,7 +148,7 @@ export default class mainScreen extends Component {
     )
   }
 
-  renderCard = ({}) => {
+  renderCard = () => {
     return(
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{this.state.candDisplay}</Text>
@@ -319,12 +321,22 @@ export default class mainScreen extends Component {
     }
   }
 
+  setSwipePerm = async (val) => {
+    this.setState({ swipePerm: val });
+  }
+
   handleYup () {
-    this.acceptFunction();
+    if (this.state.swipePerm)
+      this.acceptFunction();
+
+    console.log("swipePerm: " + this.state.swipePerm);
   }
 
   handleNope () {
-    this.rejectFunction();
+    if (this.state.swipePerm)
+      this.rejectFunction();
+
+    console.log("swipePerm: " + this.state.swipePerm);
   }
 
   // FIXME: ASK PEYTON IF THE CANDIDATE API IS GETTING A NEW CANDIDATE SINCE I'M JUST
@@ -367,6 +379,7 @@ export default class mainScreen extends Component {
         console.log("No candidates left");
         this.setCandDisplay("No candidates left to swipe on");
         this.setCandDesc("");
+        this.setSwipePerm(false);
       }
     }
     catch {
@@ -460,66 +473,74 @@ export default class mainScreen extends Component {
   }
 
   rejectFunction = async() => {
-    try{
-      let sendInfo = {
-        email_str: global.email.trim(),
-        // is_group_bool: global.group,
-        target_email_str: this.state.candEmail,
-        access_token_str: global.accessToken,
+    console.log("swipePerm: " + this.state.swipePerm);
+    if (this.state.swipePerm)
+    {
+      try{
+        let sendInfo = {
+          email_str: global.email.trim(),
+          // is_group_bool: global.group,
+          target_email_str: this.state.candEmail,
+          access_token_str: global.accessToken,
+        }
+
+        let jsonObj = JSON.stringify(sendInfo);
+
+        const response = await fetch('https://kindling-lp.herokuapp.com/api/swipe_left', 
+        {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+        var res = JSON.parse(await response.text());
+
+        if (res.success_bool == true) {
+          global.accessToken = res.refreshed_token_str;
+          console.log("Successfully rejected, about to get new candidate!");
+          this.getCand();
+        }
+        else {
+          console.log("Rejecting was a failure");
+        }
       }
-
-      let jsonObj = JSON.stringify(sendInfo);
-
-      const response = await fetch('https://kindling-lp.herokuapp.com/api/swipe_left', 
-      {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
-
-      var res = JSON.parse(await response.text());
-
-      if (res.success_bool == true) {
-        global.accessToken = res.refreshed_token_str;
-        console.log("Successfully rejected, about to get new candidate!");
-        this.getCand();
+      catch {
+        console.log("Something went wrong with the swipe_left API");
       }
-      else {
-        console.log("Rejecting was a failure");
-      }
-    }
-    catch {
-      console.log("Something went wrong with the swipe_left API");
     }
   }
 
   acceptFunction = async() => {
-    try{
-      let sendInfo = {
-        email_str: global.email.trim(),
-        // is_group_bool: global.group,
-        target_email_str: this.state.candEmail,
-        access_token_str: global.accessToken,
+    console.log("swipePerm: " + this.state.swipePerm);
+    if (this.state.swipePerm)
+    {
+      try{
+        let sendInfo = {
+          email_str: global.email.trim(),
+          // is_group_bool: global.group,
+          target_email_str: this.state.candEmail,
+          access_token_str: global.accessToken,
+        }
+
+        let jsonObj = JSON.stringify(sendInfo);
+
+        const response = await fetch('https://kindling-lp.herokuapp.com/api/swipe_right', 
+        {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+        var res = JSON.parse(await response.text());
+
+        if (res.success_bool == true) {
+          global.accessToken = res.refreshed_token_str;
+
+          // FIXME: DON'T KNOW WHAT TO DO WITH THE match_bool here
+
+          console.log("Successfully accepted");
+          console.log("Value of match_bool: " + res.match_bool);
+          this.getCand();
+        }
+        else {
+          console.log("Accepting was a failure");
+        }
       }
-
-      let jsonObj = JSON.stringify(sendInfo);
-
-      const response = await fetch('https://kindling-lp.herokuapp.com/api/swipe_right', 
-      {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
-
-      var res = JSON.parse(await response.text());
-
-      if (res.success_bool == true) {
-        global.accessToken = res.refreshed_token_str;
-
-        // FIXME: DON'T KNOW WHAT TO DO WITH THE match_bool here
-
-        console.log("Successfully accepted");
-        console.log("Value of match_bool: " + res.match_bool);
-        this.getCand();
+      catch {
+        console.log("Something went wrong with the swipe_right API");
       }
-      else {
-        console.log("Accepting was a failure");
-      }
-    }
-    catch {
-      console.log("Something went wrong with the swipe_right API");
     }
   }
 
@@ -601,12 +622,14 @@ export default class mainScreen extends Component {
             </View>
           </Modal>
 
-          <SwipeCards style={styles.swipeStyle}
+          <SwipeCards
             cards={this.state.candArray}
             renderCard={this.renderCard}
-            handleYup={this.acceptFunction}
+            renderNoMoreCards={this.renderCard}
+            handleYup={this.handleYup}
             handleNope={this.rejectFunction}
-            loop={true}
+            hasMaybeAction
+            loop={this.state.swipePerm}
             onClickHandler={() => {console.log("")}}
           />
 
@@ -782,7 +805,4 @@ const styles = StyleSheet.create({
   acceptButton: {
     marginTop: 15,
   },
-  swipeStyle: {
-
-  }
 });
