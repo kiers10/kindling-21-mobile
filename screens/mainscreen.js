@@ -7,6 +7,7 @@ import SwipeCards from 'react-native-swipe-cards';
 import background from '../assets/background.png';
 import person from '../assets/Person.png';
 import logo from '../assets/FireLogo.png';
+import bigLogo from '../assets/bigLogo.png';
 import menu from '../assets/Burger.png';
 import reject from '../assets/reject.png';
 import accept from '../assets/accept.png';
@@ -122,12 +123,16 @@ export default class mainScreen extends Component {
       errMessage: "",
       settingModalVisible: false,
       matchModalVisible: false,
+      newMatchModalVisible: false,
       tempName: "",
       tempPhone: "",
       tempDescription: "",
       candEmail: "",
       candDisplay: "",
       candDesc: "",
+      matchDisplay: "",
+      matchEmail: "",
+      matchPhone: "",
       matchesArray: [],
       candArray: [
                   {test: "test"},
@@ -212,6 +217,10 @@ export default class mainScreen extends Component {
     this.setState({...Component, matchModalVisible: visible});
   }
 
+  setNewMatchModalVisible = (visible) => {
+    this.setState({...Component, newMatchModalVisible: visible});
+  }
+
   setTempName = async (val) => {
     this.setState({ tempName: val });
   }
@@ -226,6 +235,18 @@ export default class mainScreen extends Component {
 
   setCandEmail = async (val) => {
     this.setState({ candEmail: val });
+  }
+
+  setMatchEmail = async (val) => {
+    this.setState({ matchEmail: val });
+  }
+
+  setMatchDisplay = async (val) => {
+    this.setState({ matchDisplay: val });
+  }
+
+  setMatchPhone = async (val) => {
+    this.setState({ matchPhone: val });
   }
 
   setCandDisplay = async (val) => {
@@ -277,6 +298,40 @@ export default class mainScreen extends Component {
         console.log("Successful GetProfIndiv API");
         console.log("Candidate Display: " + this.state.candDisplay);
         console.log("Candidate Description: " + this.state.candDesc);
+      }
+      else {
+        console.log("Failed at getProfIndiv API");
+      }
+    }
+    catch {
+      console.log("Something went wrong with the get_profile_individual API");
+    }
+  }
+
+  getMatchInfo = async() => {
+    try {
+      let sendInfo = {
+        email_str: this.state.matchEmail,
+        access_token_str: global.accessToken,
+      }
+
+      let jsonObj = JSON.stringify(sendInfo);
+
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_profile_group', 
+      {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+      var res = JSON.parse(await response.text());
+
+      if (res.success_bool == true) {
+        global.accessToken = res.refreshed_token_str;
+
+        this.setMatchDisplay(res.display_name_str);
+        this.setMatchPhone(res.phone_str);
+
+        console.log("Successful GetProfIndiv API");
+        console.log("Match Name: " + this.state.matchDisplay);
+        console.log("Match Email: " + this.state.matchEmail);
+        console.log("Match Phone: " + this.state.matchPhone);
       }
       else {
         console.log("Failed at getProfIndiv API");
@@ -510,6 +565,9 @@ export default class mainScreen extends Component {
     console.log("swipePerm: " + this.state.swipePerm);
     if (this.state.swipePerm)
     {
+      // Set and store the match info
+      this.setMatchEmail(this.state.candEmail);
+
       try{
         let sendInfo = {
           email_str: global.email.trim(),
@@ -528,10 +586,14 @@ export default class mainScreen extends Component {
         if (res.success_bool == true) {
           global.accessToken = res.refreshed_token_str;
 
-          // FIXME: DON'T KNOW WHAT TO DO WITH THE match_bool here
-
           console.log("Successfully accepted");
+          // Check to see if we need to display new match screen
           console.log("Value of match_bool: " + res.match_bool);
+          if (res.match_bool == true) {
+            this.getMatchInfo();
+            this.setNewMatchModalVisible(true);
+          }
+
           this.getCand();
         }
         else {
@@ -549,7 +611,7 @@ export default class mainScreen extends Component {
   }
 
   render() {
-    const { settingModalVisible, matchModalVisible } = this.state;
+    const { settingModalVisible, matchModalVisible,  newMatchModalVisible } = this.state;
     const config = {
       velocityThreshold: 0.3,
       directionalOffsetThreshold: 80
@@ -620,6 +682,21 @@ export default class mainScreen extends Component {
                 />
               </View>
             </View>
+          </Modal>
+
+          <Modal visible={newMatchModalVisible}>
+            <ImageBackground source={background} style={styles.background}>
+              <View style={styles.newMatch}>
+                <Text style={styles.newMatchTitle}>It's a match!</Text>
+                <Image source={bigLogo} style={styles.matchLogo}/>
+                <Text style={styles.newMatchSubTitle}>{this.state.matchDisplay}'s contact info:</Text>
+                <Text style={styles.newMatchInfo}>{this.state.matchEmail}</Text>
+                <Text style={styles.newMatchInfo}>{this.state.matchPhone}</Text>
+                <Pressable onPress={() => this.setNewMatchModalVisible(false)} style={styles.button}>
+                  <Text style={styles.buttonText}>Keep Swiping</Text>
+                </Pressable>
+              </View>
+            </ImageBackground>
           </Modal>
 
           <SwipeCards
@@ -804,5 +881,34 @@ const styles = StyleSheet.create({
   },
   acceptButton: {
     marginTop: 15,
+  },
+  newMatch: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  matchLogo: {
+    marginTop: 40,
+    marginBottom: 55,
+  },
+  newMatchTitle: {
+    color: "white",
+    fontSize: 40,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  newMatchSubTitle: {
+    color: "white",
+    fontSize: 23,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  newMatchInfo: {
+    color: "white",
+    fontSize: 18,
+    paddingTop: 15,
+    alignContent: "center",
+    justifyContent: "center",
+    textAlign: "center",
   },
 });
