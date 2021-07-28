@@ -12,106 +12,6 @@ import menu from '../assets/Burger.png';
 import reject from '../assets/reject.png';
 import accept from '../assets/accept.png';
 
-// Sample JSON data for matches 
-let foo = {
-  "success": true,
-  "groupData": [{
-    "title": "Website",
-    "email": "email1@mail.com",
-    "phone": "407-999-9999"
-  }, {
-      "title": "Website",
-      "email": "email2@mail.com",
-      "phone": "407-999-9999"
-    }, {
-      "title": "Website",
-      "email": "email3@mail.com",
-      "phone": "407-999-9999"
-    }, {
-      "title": "Website",
-      "email": "email4@mail.com",
-      "phone": "407-999-9999"
-    }, {
-    "title": "Website",
-    "email": "email5@mail.com",
-    "phone": "407-999-9999"
-  }, {
-    "title": "Website",
-    "email": "email6@mail.com",
-    "phone": "407-999-9999"
-  }, {
-    "title": "Website",
-    "email": "email7@mail.com",
-    "phone": "407-999-9999"
-  }, {
-    "title": "Website",
-    "email": "email8@mail.com",
-    "phone": "407-999-9999"
-  }, {
-    "title": "Website",
-    "email": "email9@mail.com",
-    "phone": "407-999-9999"
-  },  {
-    "title": "Website",
-    "email": "email10@mail.com",
-    "phone": "407-999-9999"
-  },
-  {
-    "title": "Website",
-    "email": "email11@mail.com",
-    "phone": "407-999-9999"
-  },],
-  "new_token": "prank_on_my_crazy_neighbor"
-}
-
-// Sample JSON data for candidates to be displayed on the card
-let cand = {
-  "success": true,
-  "display_name_str": "Amazon Price Tracking Website",
-  "description_str": "Looking for people that can help make a website for a local business",
-  "phone_str": "407-999-1234",
-  "refreshed_token_str": "testCrazy"
-}
-
-// Empty object array for match
-// NOTE: this needs to be here since this creates the object array used in the 
-// matches list (flatlist)
-let matches = [];
-
-for (let i = 0; i < foo.groupData.length; i++)
-{
-  let fifi = new Object;
-  fifi.title = foo.groupData[i].title;
-  fifi.email = foo.groupData[i].email;
-  fifi.phone = foo.groupData[i].phone;
-  matches.push(fifi);
-}
-
-// This is just how a sample data (object array) would look like that is used in the 
-// flatlist (the list that we used for the matches array)
-// const DATA = [
-//   {
-//     title: "Bookface Website",
-//     contact: "contact1@bookface.com",
-//     phone: "407-800-9999"
-//   },
-//   {
-//     title: "Bookface Website",
-//     contact: "contact2@bookface.com",
-//     phone: "407-800-9999"
-//   },
-//   {
-//     title: "Bookface Website",
-//     contact: "contact3@bookface.com",
-//     phone: "407-800-9999"
-//   },
-//   {
-//     title: "Bookface Website",
-//     contact: "contact4@bookface.com",
-//     phone: "407-800-9999"
-//   },
-// ]
-
 export default class mainScreen extends Component {
   constructor(props) {
     super(props);
@@ -432,7 +332,7 @@ export default class mainScreen extends Component {
       }
       else {
         console.log("No candidates left");
-        this.setCandDisplay("No candidates left to swipe on");
+        this.setCandDisplay("Sorry, there are no new candidates left to swipe on");
         this.setCandDesc("");
         this.setSwipePerm(false);
       }
