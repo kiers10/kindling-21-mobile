@@ -40,7 +40,9 @@ export default class mainScreen extends Component {
       swipePerm: true,
     };
     this.handleYup = this.handleYup.bind(this);
+    this.handleNope = this.handleNope.bind(this);
     this.acceptFunction = this.acceptFunction.bind(this);
+    this.rejectFunction = this.rejectFunction.bind(this);
   }
 
   renderItem = ({ item }) => {
@@ -604,7 +606,7 @@ export default class mainScreen extends Component {
             renderCard={this.renderCard}
             renderNoMoreCards={this.renderCard}
             handleYup={this.handleYup}
-            handleNope={this.rejectFunction}
+            handleNope={this.handleNope}
             hasMaybeAction
             loop={this.state.swipePerm}
             onClickHandler={() => {console.log("")}}
