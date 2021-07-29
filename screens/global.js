@@ -9,7 +9,7 @@ global.phone = "";
 // Variable to keep track of which group the user wants to join
 // True: Project
 // False: Individual
-global.group = true;
+global.group = false;
 
 // Variable to store the user's unique access token
 global.accessToken = "";

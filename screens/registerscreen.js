@@ -37,7 +37,7 @@ export default class registerScreen extends Component {
               style={styles.input}
               keyboardType={"number-pad"}
               placeholder={"Phone Number"}
-              onChangeText={(val) => {this.setPhone(val)}}
+              onChangeText={(val) => {this.phoneNumberIfy(val)}}
             />
             <TextInput
               style={styles.input}
@@ -57,7 +57,7 @@ export default class registerScreen extends Component {
               onChangeText={(val) => {this.setConfirmPassword(val)}}
             /> 
             <Text style={styles.groupTitle}>What are you looking for?</Text>
-            <Text style={[styles.toggleText, styles.individualText]}>Individual</Text>
+            <Text style={[styles.toggleText, styles.individualText]}>Individuals</Text>
             <Switch
               style={styles.toggle}
               trackColor={{ false: "#FFA347", true: "#BF4342" }}
@@ -68,7 +68,7 @@ export default class registerScreen extends Component {
               value={this.state.isEnabled}
               >
             </Switch>
-            <Text style={[styles.toggleText, styles.projectText]}>Project</Text>
+            <Text style={[styles.toggleText, styles.projectText]}>Projects</Text>
             <Text style={styles.error}>{this.state.errMessage}</Text>
             <Pressable style={styles.registerButton} onPress={this.checkPassword}>
               <Text 
@@ -86,28 +86,30 @@ export default class registerScreen extends Component {
     if (this.state.isEnabled == false) {
       this.setState({ isEnabled: true });
       this.state.isEnabled = true;
-      // Set the group status
-      this.group = true;
+      // Set the group status they are looking for projects so they must be an individual
+      global.group = false;
     }
     else {
       this.setState({ isEnabled: false });
       this.state.isEnabled = false;
-      this.group = false;
+      global.group = true;
     }
     console.log("isEnabled is " + this.state.isEnabled);
+    console.log("group bool is " + global.group);
   }
 
   handleClick = async() => {
     try {
       // console.log("Sending email: " + global.email + " and password: " + global.password);
       var displayName = global.firstName + " " + global.lastName;
-
+      global.fullName = displayName;
+      
       var registerInfo = {
         email_str: global.email.trim(),
         password_str: global.password.trim(),
         display_name_str: displayName,
         phone_str: global.phone,
-        is_group_bool: true
+        is_group_bool: global.group,
       }
       var jsonObj = JSON.stringify(registerInfo);
 
@@ -169,6 +171,15 @@ export default class registerScreen extends Component {
 
   setLast = async (val) => {
     global.lastName = val;
+  }
+
+  // Turn phone number string into a general format.
+  phoneNumberIfy = async(val) => {
+    let num = val.replaceAll(/\D/g, "");
+    if (num.length === 10)
+      this.setPhone(`(${num.substring(0,3)}) ${num.substring(3,6)}-${num.substring(6)}`);
+    else
+      this.setPhone(val);
   }
 
   setPhone = async (val) => {
