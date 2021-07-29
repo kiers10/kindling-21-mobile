@@ -3,15 +3,16 @@ import React, { Component } from 'react';
 import { createStackNavigator, createAppContainer, NavigationContainer } from 'react-navigation';
 import { Pressable, Button, TextInput, ImageBackground, Image, StyleSheet, Text, View, Keyboard } from 'react-native';
 import background from '../assets/background.png';
-
-// const project = global.group;
+import ProfilePicture from './profilepicture';
 
 export default class descriptionScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
         <ImageBackground source={background} style={styles.background}> 
-          <Text style={styles.title}>{global.group ? "Describe your project" : "Describe yourself"}</Text>
+            <ProfilePicture/>
+            <Text style={styles.title}>{global.fullName}</Text>
+          <Text style={styles.title}>{global.group ? "Tell us about your project" : "Tell us about yourself"}</Text>
           <TextInput
             style={styles.input} multiline={true} editable={true}
             onChangeText={(val) => {this.setDescription(val)}}
@@ -147,9 +148,10 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   title: {
-    fontSize: 30,
+    fontSize: 25,
     color: "white",
-    paddingTop: 75,
+    paddingTop: 10,
+    fontWeight: "bold",
   },
   input: {
     flex: 1,
@@ -159,8 +161,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 1,
     width: "75%",
-    paddingLeft: 5,
-    // marginBottom: 50,
+    paddingLeft: 15,
+    paddingTop: 15,
     borderRadius: 10,
     textAlignVertical: "top",
   },
