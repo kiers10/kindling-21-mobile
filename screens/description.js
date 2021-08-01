@@ -5,13 +5,15 @@ import { Pressable, Button, TextInput, ImageBackground, Image, StyleSheet, Text,
 import background from '../assets/background.png';
 import ProfilePicture from './profilepicture';
 
+global.pfpError = false;
+
 export default class descriptionScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
         <ImageBackground source={background} style={styles.background}> 
-            <ProfilePicture/>
-            <Text style={styles.title}>{global.fullName}</Text>
+          {/* <ProfilePicture/> */}
+            {/* <Text style={styles.title}>{global.fullName}</Text> */}
           <Text style={styles.title}>{global.group ? "Tell us about your project" : "Tell us about yourself"}</Text>
           <TextInput
             style={styles.input} multiline={true} editable={true}
@@ -28,11 +30,44 @@ export default class descriptionScreen extends Component {
     )
   }
 
+  // setProfilePicture = async() => {
+  //   try {
+  //     console.log("image uri: " + global.picture);
+  //     let data = new FormData();
+  //     data.append('profile_picture', global.picture);
+  //     data.append('email_str', global.email.trim());
+  //     data.append('access_token_str', global.accessToken);
+
+  //     const response = await fetch('https://kindling-lp.herokuapp.com/api/upload_profile_picture', 
+  //       {method:'POST', body:data, headers:{'Content-Type':'multipart/form-data'}});
+
+  //     var res = JSON.parse(await response.text());
+
+  //     if (res.success_bool == true) {
+  //       global.accessToken = res.refreshed_token_str;
+  //       console.log("Success setting profile picture");
+  //     }
+  //     else {
+  //       global.pfpError = true;
+  //       console.log("Setting profile picture unsuccessful");
+  //       console.log("Error code: " + res.error_code_int);
+  //     }
+  //   }
+  //   catch {
+  //     console.log("Something went wrong when setting profile picture");
+  //   }
+  // }
+
   setDescription = async(val) => {
     global.description = val;
   }
 
   initializeGroup = async() => {
+    // this.setProfilePicture();
+    // if (global.pfpError == false) {
+    //   return;
+    // }
+
     try {
       var profileInfo = {
         email_str: global.email.trim(),
@@ -77,6 +112,11 @@ export default class descriptionScreen extends Component {
   }
 
   initializeIndiv = async() => {
+    // this.setProfilePicture();
+    // if (global.pfpError == false) {
+    //   return;
+    // }
+
     try {
       var profileInfo = {
         email_str: global.email.trim(),

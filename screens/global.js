@@ -5,6 +5,7 @@ global.firstName = "";
 global.lastName = "";
 global.fullName = "";
 global.phone = "";
+global.picture = "https://thumbs.dreamstime.com/b/school-science-radiation-atom-books-bacteria-miscroscope-vector-illustration-design-144774102.jpg";
 
 // Variable to keep track of which group the user wants to join
 // True: Project
