@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { createStackNavigator, createAppContainer , NavigationContainer } from 'react-navigation';
-import { Pressable, Modal, ImageBackground, Image, StyleSheet, Text, View, TextInput, FlatList, Keyboard } from 'react-native';
+import { Pressable, Modal, ImageBackground, Image, StyleSheet, Text, View, TextInput, FlatList, Keyboard, TouchableHighlightBase } from 'react-native';
 import SwipeCards from 'react-native-swipe-cards';
 
 import background from '../assets/background.png';
@@ -38,6 +38,11 @@ export default class mainScreen extends Component {
                   {test: "test"},
       ],
       swipePerm: true,
+      displayMatchInfo: false,
+      displayMatchTitle: "Loading...",
+      displayMatchEmail: "Loading...",
+      displayMatchPhone: "Loading...",
+      displayMatchDesc: "Loading...",
     };
     this.handleYup = this.handleYup.bind(this);
     this.handleNope = this.handleNope.bind(this);
@@ -47,11 +52,19 @@ export default class mainScreen extends Component {
 
   renderItem = ({ item }) => {
     return(
-      <View style={{ borderBottomWidth: 1, borderTopWidth: 1, borderColor: "gray", }}>
-        <Text style={{ color: "#BF4342", fontWeight: "bold" }}>{item.title}</Text>
-        <Text>{item.email}</Text>
-        <Text>{item.phone}</Text>
-      </View>
+      <Pressable onPress={() => this.displayMatch(item.email)}
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? '#d3d3d3' : 'white'
+          }
+        ]}
+      >
+        <View style={{ borderBottomWidth: 1, borderTopWidth: 1, borderColor: "gray", }}>
+          <Text style={{ color: "#BF4342", fontWeight: "bold" }}>{item.title}</Text>
+          <Text>{item.email}</Text>
+          <Text>{item.phone}</Text>
+        </View>
+      </Pressable>
     )
   }
 
@@ -62,6 +75,98 @@ export default class mainScreen extends Component {
         <Text style={styles.cardDescription}>{this.state.candDesc}</Text>
       </View>
     )
+  }
+
+  displayMatch = async(val) => {
+    console.log("Clicked on a match");
+    console.log("val: " + val);
+    
+    console.log("group bool: " + global.group);
+    if (global.group == true) {
+      this.getMatchProfIndiv(val);
+      console.log("Got the individual's info!");
+    }
+    else {
+      this.getMatchProfGroup(val);
+      console.log("Got the group info!");
+    }
+    
+    this.setState({displayMatchInfo: true});
+  }
+
+  undisplayMatch = async() => {
+    this.setState({displayMatchInfo: false});
+    this.setState({displayMatchTitle: "Loading..."});
+    this.setState({displayMatchEmail: "Loading..."});
+    this.setState({displayMatchPhone: "Loading..."});
+    this.setState({displayMatchDesc: "Loading..."});
+  }
+
+  getMatchProfIndiv = async (val) => {
+    try {
+      let sendInfo = {
+        email_str: val,
+        access_token_str: global.accessToken,
+      }
+
+      let jsonObj = JSON.stringify(sendInfo);
+
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_profile_individual', 
+      {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+      var res = JSON.parse(await response.text());
+
+      if (res.success_bool == true) {
+        global.accessToken = res.refreshed_token_str;
+
+
+        this.setState({ displayMatchTitle: res.display_name_str});
+        this.setState({ displayMatchEmail: val });
+        this.setState({ displayMatchPhone: res.phone_str});
+        this.setState({ displayMatchDesc: res.description_str });
+
+      }
+      else {
+        console.log("Failed at getMatchProfIndiv Function");
+      }
+    }
+    catch {
+      console.log("Something went wrong with the get_profile_individual API (getMatch Function)");
+    }
+  }
+
+  getMatchProfGroup = async (val) => {
+    try {
+      let sendInfo = {
+        email_str: val,
+        access_token_str: global.accessToken,
+      }
+
+      console.log("Input email: " + val);
+      let jsonObj = JSON.stringify(sendInfo);
+
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_profile_group', 
+      {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+      var res = JSON.parse(await response.text());
+
+      if (res.success_bool == true) {
+        global.accessToken = res.refreshed_token_str;
+
+
+        this.setState({ displayMatchTitle: res.display_name_str});
+        this.setState({ displayMatchEmail: val });
+        this.setState({ displayMatchPhone: res.phone_str});
+        this.setState({ displayMatchDesc: res.description_str });
+
+      }
+      else {
+        console.log("Failed at getMatchProfGroup Function");
+      }
+    }
+    catch {
+      console.log("Something went wrong with the get_profile_group API (getMatch Function)");
+    }
   }
 
   logOutFunction = async() => {
@@ -594,6 +699,24 @@ export default class mainScreen extends Component {
                 />
               </View>
             </View>
+
+            <Modal visible={this.state.displayMatchInfo}>
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <View style={styles.mainHeader}>
+                    <Text style={styles.modalHeader}>{global.group ? "Group Name" : "Individual Name"}</Text>
+                    <Text style={styles.closeButton} onPress={this.undisplayMatch}>X</Text>
+                  </View>
+                  <Text>{this.state.displayMatchTitle}</Text>
+                  <Text style={styles.modalHeader}>Email:</Text>
+                  <Text>{this.state.displayMatchEmail}</Text>
+                  <Text style={styles.modalHeader}>Phone:</Text>
+                  <Text>{this.state.displayMatchPhone}</Text>
+                  <Text style={styles.modalHeader}>Description:</Text>
+                  <Text>{this.state.displayMatchDesc}</Text>
+                </View>
+              </View>
+            </Modal>
           </Modal>
 
           <Modal visible={newMatchModalVisible}>
