@@ -64,6 +64,7 @@ export default class ProfilePicture extends Component{
     console.log(JSON.stringify(_image));
 
     if (!_image.cancelled) {
+      console.log("Image type: " + _image.type);
       this.setImage(_image.uri);
     }
   }

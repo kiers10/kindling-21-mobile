@@ -1,8 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { createStackNavigator, createAppContainer , NavigationContainer } from 'react-navigation';
-import { Pressable, Modal, ImageBackground, Image, StyleSheet, Text, View, TextInput, FlatList, Keyboard, TouchableHighlightBase } from 'react-native';
+import { Pressable, Modal, ImageBackground, Image, StyleSheet, Text, View, TextInput, FlatList, Keyboard, TouchableHighlightBase, TouchableOpacity } from 'react-native';
 import SwipeCards from 'react-native-swipe-cards';
+import * as ImagePicker from 'expo-image-picker';
 
 import background from '../assets/background.png';
 import person from '../assets/Person.png';
@@ -11,6 +12,7 @@ import bigLogo from '../assets/bigLogo.png';
 import menu from '../assets/Burger.png';
 import reject from '../assets/reject.png';
 import accept from '../assets/accept.png';
+import ProfilePicture from './profilepicture';
 
 export default class mainScreen extends Component {
   constructor(props) {
@@ -43,6 +45,7 @@ export default class mainScreen extends Component {
       displayMatchEmail: "Loading...",
       displayMatchPhone: "Loading...",
       displayMatchDesc: "Loading...",
+      image: ""
     };
     this.handleYup = this.handleYup.bind(this);
     this.handleNope = this.handleNope.bind(this);
@@ -218,6 +221,14 @@ export default class mainScreen extends Component {
     console.log("phone: " + this.state.phone);
     console.log("description: " + this.state.description);
     this.setState({...Component, settingModalVisible: visible});
+    
+    if (visible === true)
+    {
+      console.log("fuck");
+      this.getProfilePicture(global.email);
+      console.log("you");
+    }
+    // global.picture = this.get_profile_picture(global.email);
   }
 
   setMatchModalVisible = (visible) => {
@@ -230,6 +241,28 @@ export default class mainScreen extends Component {
 
   setTempName = async (val) => {
     this.setState({ tempName: val });
+  }
+
+  getProfilePicture = async(val) => {
+    try{
+      var sendInfo = {
+        email_str: val,
+        access_token_str: global.accessToken
+      }
+
+      let jsonObj = JSON.stringify(sendInfo);
+
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_profile_picture', 
+      {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+      console.log("Response for get pic response:");
+      console.log(JSON.stringify(response));
+
+      this.setState({image: response});
+    }
+    catch{
+      console.log("Fail whale");
+    }
   }
   
   // Turn phone number string into a general format.
@@ -623,6 +656,27 @@ export default class mainScreen extends Component {
     }
   }
 
+  setImage = async(val) => {
+    this.setState({ image: val });
+    global.picture = val;
+  }
+
+  addImage = async() => {
+    let _image = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4,3],
+      quality: 1,
+    });
+
+    console.log(JSON.stringify(_image));
+
+    if (!_image.cancelled) {
+      console.log("Image type: " + _image.type);
+      this.setImage(_image.uri);
+    }
+  }
+
   componentDidMount(){
     this.getCand();
   }
@@ -639,7 +693,8 @@ export default class mainScreen extends Component {
           <View style={styles.row}>
 
             <Pressable style={styles.person} onPress={() => this.setSettingModalVisible(true)}>
-              <Image source={person}></Image>
+              {/* <Image source={person}></Image> */}
+              <Text style={{color: 'white'}}>Fuck</Text>
             </Pressable>
 
             <Image source={logo} style={styles.logo}></Image>
@@ -658,6 +713,43 @@ export default class mainScreen extends Component {
                   <Pressable onPress={() => this.setSettingModalVisible(false)}>
                     <Text style={styles.closeButton}>X</Text>
                   </Pressable>
+                </View>
+                
+                {/* <Image source={person} style={{ width: "100%", heigth: "100%", paddingBottom: "25%"}}/> */}
+                <View style={{elevation:2,
+                    // marginTop: 100,
+                    height: 175,
+                    width:200, 
+                    backgroundColor:'#efefef',
+                    position:'relative',
+                    borderRadius:999,
+                    overflow:'hidden',}}>
+                    {
+                      <Image source={{ uri: this.state.image }} style={{ width: 200, height: 200 }} />
+                    }
+              
+                    <View style={{
+                            opacity:0.7,
+                            position:'absolute',
+                            right:0,
+                            bottom:0,
+                            backgroundColor:'black',
+                            width:'100%',
+                            height:'25%',
+                        }}>
+                        <TouchableOpacity onPress={this.addImage} style={{
+                                display:'flex',
+                                alignItems:"center",
+                                justifyContent:'center'
+                            }} >
+                            <Text style={{
+                            fontSize: 18,
+                            marginTop: 8,
+                            color: "white",
+                            // fontWeight: "bold",
+                          }}>{this.state.image ? 'Edit' : 'Upload'} Image</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 {/* FIXME: CHECK WITH KIERSTEN IF WE CAN JUST USE THE GLOBAL VARIABLES FOR THE PLACEHOLDER OR WE NEED TO USE THE STATES*/}
@@ -817,7 +909,7 @@ const styles = StyleSheet.create({
     marginTop: 9,
   },
   modalContent: {
-    paddingTop: "15%",
+    // paddingTop: "15%",
   },
   mainHeader: {
     flexDirection: "row",
@@ -834,7 +926,7 @@ const styles = StyleSheet.create({
     borderColor: "#C6C4C4",
     borderWidth: 1,
     borderRadius: 10,
-    height: "40%",
+    height: "30%",
     textAlignVertical: "top",
     padding: "2%",
     marginBottom: 10,

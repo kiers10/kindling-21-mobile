@@ -6,28 +6,46 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "test": "jest"
+    "test": "jest --verbose"
   },
   "dependencies": {
+    "@testing-library/react-native": "^7.2.0",
     "axios": "^0.21.1",
     "expo": "~41.0.1",
-    "expo-image-picker": "^10.2.2",
     "expo-status-bar": "~1.0.4",
     "net": "^1.0.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-41.0.0.tar.gz",
-    "react-native-document-picker": "^5.2.0",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-swipe-cards": "^0.1.1",
     "react-native-swipe-gestures": "^1.0.5",
     "react-native-web": "^0.17.1",
     "react-navigation": "^4.4.4",
-    "react-navigation-stack": "^2.10.4"
+    "react-navigation-stack": "^2.10.4",
+    "expo-image-picker": "~10.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
-    "jest": "^27.0.6"
+    "@testing-library/jest-native": "^4.0.2",
+    "jest": "^26.0",
+    "react-test-renderer": "^17.0.2"
+  },
+  "jest": {
+    "preset": "react-native",
+    "setupFilesAfterEnv": [
+      "@testing-library/jest-native/extend-expect"
+    ],
+    "transformIgnorePatterns": [
+      "/node_modules/(?!react-native|react-clone-referenced-element|react-navigation|expo-status-bar)"
+    ],
+    "moduleDirectories": [
+      "node_modules"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "jsx"
+    ]
   },
   "private": true
 }

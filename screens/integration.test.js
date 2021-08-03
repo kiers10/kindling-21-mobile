@@ -1,15 +1,23 @@
-const axios = require('axios')
+import React from "react";
+import LoginScreen from "./loginscreen";
+import { render } from "@testing-library/react-native";
+import axios from "axios";
+jest.mock("axios");
 
-jest.mock('axios')
+describe("LoginScreen", () => {
+  it("Renders LoginScreen without crashing (Unit Test)", () => {
+    render(<LoginScreen />);
+  });
 
-const foo = axios.post('https://kindling-lp.herokuapp.com/api/send_verification_email', {email_str: 'josephxm825@gmail.com'})
+  it("Mocks Verification Email API call (Integration Test)", async () => {
+    axios.post = jest.fn().mockReturnValueOnce({ success_bool: true });
+    axios.post(
+      "https://kindling-lp.herokuapp.com/api/send_verification_email",
+      {
+        email: "josephxm825@gmail.com",
+      }
+    );
 
-const data = {
-  success_bool: true
-}
-
-describe('api call', () => {
-  it('sendEmailVerification', () => {
-    axios.post.mockImplementationOnce(() => Promise.resolve(data))
-  })
-})
+    expect(axios.post).toHaveBeenCalledTimes(1);
+  });
+});
