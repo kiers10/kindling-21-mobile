@@ -34,12 +34,6 @@ export default class descriptionScreen extends Component {
   setProfilePicture = async() => {
     try {
       console.log("image uri: " + global.picture);
-
-      const file = new Blob([global.picture], {type: 'text/plain'});
-      console.log("File of blob: " + JSON.stringify(file));
-      global.picture = file;
-      console.log("Global of pictures: " + JSON.stringify(global.picture));
-
       let data = new FormData();
       data.append('profile_picture', {uri : global.picture, type : "image/jpeg", name: "photo.jpg"});
       data.append('email_str', global.email.trim());
@@ -55,7 +49,7 @@ export default class descriptionScreen extends Component {
         console.log("Success setting profile picture");
       }
       else {
-        global.pfpError = true;
+        global.pfpError = false;
         console.log("Setting profile picture unsuccessful");
         console.log("Error code: " + res.error_code_int);
       }
@@ -72,10 +66,11 @@ export default class descriptionScreen extends Component {
   initializeGroup = async() => {
     // FIXME: THIS WAS COMMENTED
     this.setProfilePicture();
-    if (global.pfpError == false) {
-      return;
-    }
+    // if (global.pfpError == false) {
+    //   return;
+    // }
 
+    console.log("Starting to set bools");
     try {
       var profileInfo = {
         email_str: global.email.trim(),
@@ -125,6 +120,7 @@ export default class descriptionScreen extends Component {
       return;
     }
 
+    console.log("Starting to set bools");
     try {
       var profileInfo = {
         email_str: global.email.trim(),
@@ -177,6 +173,7 @@ export default class descriptionScreen extends Component {
       console.log("User signed up as individual");
       this.initializeIndiv();
     }
+    console.log("Out of initialize calls");
   }
 }
 

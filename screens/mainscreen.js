@@ -32,6 +32,7 @@ export default class mainScreen extends Component {
       candEmail: "",
       candDisplay: "",
       candDesc: "",
+      candProfilePic: "https://thumbs.dreamstime.com/b/school-science-radiation-atom-books-bacteria-miscroscope-vector-illustration-design-144774102.jpg",
       matchDisplay: "",
       matchEmail: "",
       matchPhone: "",
@@ -45,7 +46,8 @@ export default class mainScreen extends Component {
       displayMatchEmail: "Loading...",
       displayMatchPhone: "Loading...",
       displayMatchDesc: "Loading...",
-      image: ""
+      displayMatchProfilePicture: "https://thumbs.dreamstime.com/b/school-science-radiation-atom-books-bacteria-miscroscope-vector-illustration-design-144774102.jpg",
+      image: "https://thumbs.dreamstime.com/b/school-science-radiation-atom-books-bacteria-miscroscope-vector-illustration-design-144774102.jpg"
     };
     this.handleYup = this.handleYup.bind(this);
     this.handleNope = this.handleNope.bind(this);
@@ -76,6 +78,16 @@ export default class mainScreen extends Component {
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{this.state.candDisplay}</Text>
         <Text style={styles.cardDescription}>{this.state.candDesc}</Text>
+        <View style={{elevation:2,
+            // marginTop: 100,
+            height: 100,
+            width: 100, 
+            backgroundColor:'#efefef',
+            position: "absolute", bottom: 10, left: 10,
+            borderRadius:999,
+            overflow:'hidden',}}>
+              <Image source={{ uri: this.state.candProfilePic }} style={{ width: "100%", height: "100%"}} />
+        </View>
       </View>
     )
   }
@@ -87,10 +99,12 @@ export default class mainScreen extends Component {
     console.log("group bool: " + global.group);
     if (global.group == true) {
       this.getMatchProfIndiv(val);
+      this.getMatchPicture(this.state.displayMatchEmail);
       console.log("Got the individual's info!");
     }
     else {
       this.getMatchProfGroup(val);
+      this.getMatchPicture(this.state.displayMatchEmail);
       console.log("Got the group info!");
     }
     
@@ -224,9 +238,8 @@ export default class mainScreen extends Component {
     
     if (visible === true)
     {
-      console.log("fuck");
+      console.log("Visible is true, will call getProfilePicture " + global.email);
       this.getProfilePicture(global.email);
-      console.log("you");
     }
     // global.picture = this.get_profile_picture(global.email);
   }
@@ -243,8 +256,38 @@ export default class mainScreen extends Component {
     this.setState({ tempName: val });
   }
 
+  setProfilePicture = async() => {
+  try {
+    console.log("image uri: " + this.state.image);
+    let data = new FormData();
+    data.append('profile_picture', {uri : this.state.image, type : "image/jpeg", name: "photo.jpg"});
+    data.append('email_str', global.email.trim());
+    data.append('access_token_str', global.accessToken);
+
+    const response = await fetch('https://kindling-lp.herokuapp.com/api/upload_profile_picture', 
+      {method:'POST', body:data, headers:{'Content-Type':'multipart/form-data'}});
+
+    var res = JSON.parse(await response.text());
+
+    if (res.success_bool == true) {
+      global.accessToken = res.refreshed_token_str;
+      console.log("Success setting profile picture");
+    }
+    else {
+      global.pfpError = true;
+      console.log("Setting profile picture unsuccessful");
+      console.log("Error code: " + res.error_code_int);
+    }
+  }
+  catch {
+    console.log("Something went wrong when setting profile picture");
+  }
+}
+
   getProfilePicture = async(val) => {
     try{
+      console.log("the profile picture email we're trying to get: " + val);
+      console.log("the access token for the email: " + global.accessToken);
       var sendInfo = {
         email_str: val,
         access_token_str: global.accessToken
@@ -255,13 +298,196 @@ export default class mainScreen extends Component {
       const response = await fetch('https://kindling-lp.herokuapp.com/api/get_profile_picture', 
       {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
 
-      console.log("Response for get pic response:");
-      console.log(JSON.stringify(response));
+      const blob = response._bodyBlob;
 
-      this.setState({image: response});
+      const fileReaderInstance = new FileReader();
+        fileReaderInstance.readAsDataURL(blob); 
+        fileReaderInstance.onload = () => {
+          const base64data = fileReaderInstance.result;   
+          console.log("The base 64 data:");             
+          console.log(base64data);
+          this.setState({ image: base64data });
+       }
+
+      
+      // console.log("Response for get pic response:");
+      // const res = response._bodyBlob;
+      // console.log("Res me sage!!!");
+      // console.log(res);
+      // const temp = URL.createObjectURL(res);
+      // console.log("Create me sage!!!");
+
+      // this.setState({ image: temp });
+
+      // const blob = response._bodyBlob;
+      // console.log("F");
+      // console.log(blob);
+      // const reader = new FileReader();
+      // console.log("U");
+      // console.log(reader);
+      // console.log("C");
+      // const base64Array = [];
+      // const waitArray = [];
+      // const updateArrays = (base64, num) => {
+      //   base64Array.push(base64);
+      //   waitArray.push(num);
+      // }
+      // reader.onloadend = function () {
+      //   console.log("don't fucking mess with me or I'll kill you");
+      //   const base64 = reader.result;
+      //   updateArrays(base64, 0);
+      //   console.log(base64);
+      // };
+      // if (waitArray.length > 0)
+      // {
+      //   console.log("Array of 64 base");
+      //   console.log(base64Array[0]);
+      //   this.setState({ image: base64Array[0] });
+      // }
+      // reader.readAsDataURL(blob);
+      // console.log(waitArray.length);
+
     }
     catch{
-      console.log("Fail whale");
+      console.log("Fail to use the function getProfilePicture");
+    }
+  }
+
+  getCandPicture = async(val) => {
+    try{
+      console.log("the profile picture email we're trying to get: " + val);
+      console.log("the access token for the email: " + global.accessToken);
+      var sendInfo = {
+        email_str: val,
+        access_token_str: global.accessToken
+      }
+
+      let jsonObj = JSON.stringify(sendInfo);
+
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_profile_picture', 
+      {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+      const blob = response._bodyBlob;
+
+      const fileReaderInstance = new FileReader();
+        fileReaderInstance.readAsDataURL(blob); 
+        fileReaderInstance.onload = () => {
+          const base64data = fileReaderInstance.result;   
+          console.log("The base 64 data:");             
+          console.log(base64data);
+          this.setState({ candProfilePic: base64data });
+       }
+
+      
+      // console.log("Response for get pic response:");
+      // const res = response._bodyBlob;
+      // console.log("Res me sage!!!");
+      // console.log(res);
+      // const temp = URL.createObjectURL(res);
+      // console.log("Create me sage!!!");
+
+      // this.setState({ image: temp });
+
+      // const blob = response._bodyBlob;
+      // console.log("F");
+      // console.log(blob);
+      // const reader = new FileReader();
+      // console.log("U");
+      // console.log(reader);
+      // console.log("C");
+      // const base64Array = [];
+      // const waitArray = [];
+      // const updateArrays = (base64, num) => {
+      //   base64Array.push(base64);
+      //   waitArray.push(num);
+      // }
+      // reader.onloadend = function () {
+      //   console.log("don't fucking mess with me or I'll kill you");
+      //   const base64 = reader.result;
+      //   updateArrays(base64, 0);
+      //   console.log(base64);
+      // };
+      // if (waitArray.length > 0)
+      // {
+      //   console.log("Array of 64 base");
+      //   console.log(base64Array[0]);
+      //   this.setState({ image: base64Array[0] });
+      // }
+      // reader.readAsDataURL(blob);
+      // console.log(waitArray.length);
+
+    }
+    catch{
+      console.log("Fail to use the function getProfilePicture");
+    }
+  }
+
+   getMatchPicture = async(val) => {
+    try{
+      console.log("the profile picture email we're trying to get: " + val);
+      console.log("the access token for the email: " + global.accessToken);
+      var sendInfo = {
+        email_str: val,
+        access_token_str: global.accessToken
+      }
+
+      let jsonObj = JSON.stringify(sendInfo);
+
+      const response = await fetch('https://kindling-lp.herokuapp.com/api/get_profile_picture', 
+      {method:'POST', body:jsonObj, headers:{'Content-Type':'application/json'}});
+
+      const blob = response._bodyBlob;
+
+      const fileReaderInstance = new FileReader();
+        fileReaderInstance.readAsDataURL(blob); 
+        fileReaderInstance.onload = () => {
+          const base64data = fileReaderInstance.result;   
+          console.log("The base 64 data:");             
+          console.log(base64data);
+          this.setState({ displayMatchProfilePicture: base64data });
+       }
+
+      
+      // console.log("Response for get pic response:");
+      // const res = response._bodyBlob;
+      // console.log("Res me sage!!!");
+      // console.log(res);
+      // const temp = URL.createObjectURL(res);
+      // console.log("Create me sage!!!");
+
+      // this.setState({ image: temp });
+
+      // const blob = response._bodyBlob;
+      // console.log("F");
+      // console.log(blob);
+      // const reader = new FileReader();
+      // console.log("U");
+      // console.log(reader);
+      // console.log("C");
+      // const base64Array = [];
+      // const waitArray = [];
+      // const updateArrays = (base64, num) => {
+      //   base64Array.push(base64);
+      //   waitArray.push(num);
+      // }
+      // reader.onloadend = function () {
+      //   console.log("don't fucking mess with me or I'll kill you");
+      //   const base64 = reader.result;
+      //   updateArrays(base64, 0);
+      //   console.log(base64);
+      // };
+      // if (waitArray.length > 0)
+      // {
+      //   console.log("Array of 64 base");
+      //   console.log(base64Array[0]);
+      //   this.setState({ image: base64Array[0] });
+      // }
+      // reader.readAsDataURL(blob);
+      // console.log(waitArray.length);
+
+    }
+    catch{
+      console.log("Fail to use the function getProfilePicture");
     }
   }
   
@@ -472,10 +698,12 @@ export default class mainScreen extends Component {
         console.log("group bool: " + global.group);
         if (global.group == true) {
           this.getProfIndiv();
+          this.getCandPicture(this.state.candEmail);
           console.log("Got the individual's info!");
         }
         else {
           this.getProfGroup();
+          this.getCandPicture(this.state.candEmail);
           console.log("Got the group info!");
         }
       }
@@ -564,6 +792,8 @@ export default class mainScreen extends Component {
         let nameArr = global.fullName.split(" ");
         global.firstName = nameArr[0];
         global.lastName = nameArr[1];
+
+        this.setProfilePicture();
 
         console.log("Profile info updated successfully");
         this.setSettingModalVisible(false);
@@ -693,8 +923,7 @@ export default class mainScreen extends Component {
           <View style={styles.row}>
 
             <Pressable style={styles.person} onPress={() => this.setSettingModalVisible(true)}>
-              {/* <Image source={person}></Image> */}
-              <Text style={{color: 'white'}}>Fuck</Text>
+              <Image source={person}></Image>
             </Pressable>
 
             <Image source={logo} style={styles.logo}></Image>
@@ -796,9 +1025,20 @@ export default class mainScreen extends Component {
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                   <View style={styles.mainHeader}>
-                    <Text style={styles.modalHeader}>{global.group ? "Group Name" : "Individual Name"}</Text>
+                    <View style={{elevation:2,
+                        // marginTop: 100,
+                        height: 175,
+                        width:200, 
+                        backgroundColor:'#efefef',
+                        position:'relative',
+                        borderRadius:999,
+                        overflow:'hidden',}}>
+                          <Image source={{ uri: this.state.displayMatchProfilePicture }} style={{ width: 200, height: 200 }} />
+                    </View>
                     <Text style={styles.closeButton} onPress={this.undisplayMatch}>X</Text>
                   </View>
+
+                  <Text style={styles.modalHeader}>{global.group ? "Group Name" : "Individual Name"}</Text>
                   <Text>{this.state.displayMatchTitle}</Text>
                   <Text style={styles.modalHeader}>Email:</Text>
                   <Text>{this.state.displayMatchEmail}</Text>
