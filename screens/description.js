@@ -116,9 +116,9 @@ export default class descriptionScreen extends Component {
 
   initializeIndiv = async() => {
     this.setProfilePicture();
-    if (global.pfpError == false) {
-      return;
-    }
+    // if (global.pfpError == false) {
+    //   return;
+    // }
 
     console.log("Starting to set bools");
     try {

@@ -99,12 +99,12 @@ export default class mainScreen extends Component {
     console.log("group bool: " + global.group);
     if (global.group == true) {
       this.getMatchProfIndiv(val);
-      this.getMatchPicture(this.state.displayMatchEmail);
+      this.getMatchPicture(val);
       console.log("Got the individual's info!");
     }
     else {
       this.getMatchProfGroup(val);
-      this.getMatchPicture(this.state.displayMatchEmail);
+      this.getMatchPicture(val);
       console.log("Got the group info!");
     }
     
@@ -117,6 +117,66 @@ export default class mainScreen extends Component {
     this.setState({displayMatchEmail: "Loading..."});
     this.setState({displayMatchPhone: "Loading..."});
     this.setState({displayMatchDesc: "Loading..."});
+  }
+
+  get_content_type(uri_str)
+  {
+    let last_index_of_dot =
+      uri_str.lastIndexOf(".");
+
+    let extension_name_str =
+      uri_str.substr(last_index_of_dot + 1);
+
+    let lowercase_extension_name_str =
+      extension_name_str.toLowerCase();
+
+    // IF IT'S A BITMAP FILE
+    if(lowercase_extension_name_str === "bmp")
+    {
+      return "image/bmp";
+    }
+
+    // IF IT'S A JPEG FILE
+    else if(lowercase_extension_name_str === "jpg" || lowercase_extension_name_str === "jpeg"
+            || lowercase_extension_name_str === "jpe" || lowercase_extension_name_str === "jfif")
+    {
+      return "image/jpeg";
+    }
+
+    // IF IT'S A GIF FILE
+    else if(lowercase_extension_name_str === "gif")
+    {
+      return "image/gif";
+    }
+
+    // IF IT'S A TIFF FILE
+    else if(lowercase_extension_name_str === "tif" || lowercase_extension_name_str === "tiff")
+    {
+      return "image/tiff";
+    }
+
+    // IF IT'S A PNG FILE
+    else if(lowercase_extension_name_str === "png")
+    {
+      return "image/png";
+    }
+
+    // OTHERWISE, IT'S AN UNRECOGNIZED IMAGE FILE
+    else
+    {
+      return "";
+    }
+  }
+
+  get_file_name(uri_str)
+  {
+    let last_index_of_slash =
+      uri_str.lastIndexOf("/");
+
+    let file_name_str =
+      uri_str.substr(last_index_of_slash + 1);
+
+    return file_name_str;
   }
 
   getMatchProfIndiv = async (val) => {
@@ -236,12 +296,8 @@ export default class mainScreen extends Component {
     console.log("description: " + this.state.description);
     this.setState({...Component, settingModalVisible: visible});
     
-    if (visible === true)
-    {
-      console.log("Visible is true, will call getProfilePicture " + global.email);
-      this.getProfilePicture(global.email);
-    }
-    // global.picture = this.get_profile_picture(global.email);
+    console.log("Visible is true, will call getProfilePicture " + global.email);
+    this.getProfilePicture(global.email);
   }
 
   setMatchModalVisible = (visible) => {
@@ -260,7 +316,7 @@ export default class mainScreen extends Component {
   try {
     console.log("image uri: " + this.state.image);
     let data = new FormData();
-    data.append('profile_picture', {uri : this.state.image, type : "image/jpeg", name: "photo.jpg"});
+    data.append('profile_picture', {uri : this.state.image, type : this.get_content_type(this.state.image), name: this.get_file_name(this.state.image)});
     data.append('email_str', global.email.trim());
     data.append('access_token_str', global.accessToken);
 
@@ -271,6 +327,7 @@ export default class mainScreen extends Component {
 
     if (res.success_bool == true) {
       global.accessToken = res.refreshed_token_str;
+      console.log("Global access token: " + global.accessToken);
       console.log("Success setting profile picture");
     }
     else {
@@ -286,10 +343,8 @@ export default class mainScreen extends Component {
 
   getProfilePicture = async(val) => {
     try{
-      console.log("the profile picture email we're trying to get: " + val);
-      console.log("the access token for the email: " + global.accessToken);
       var sendInfo = {
-        email_str: val,
+        email_str: val.trim(),
         access_token_str: global.accessToken
       }
 
@@ -304,49 +359,8 @@ export default class mainScreen extends Component {
         fileReaderInstance.readAsDataURL(blob); 
         fileReaderInstance.onload = () => {
           const base64data = fileReaderInstance.result;   
-          console.log("The base 64 data:");             
-          console.log(base64data);
           this.setState({ image: base64data });
        }
-
-      
-      // console.log("Response for get pic response:");
-      // const res = response._bodyBlob;
-      // console.log("Res me sage!!!");
-      // console.log(res);
-      // const temp = URL.createObjectURL(res);
-      // console.log("Create me sage!!!");
-
-      // this.setState({ image: temp });
-
-      // const blob = response._bodyBlob;
-      // console.log("F");
-      // console.log(blob);
-      // const reader = new FileReader();
-      // console.log("U");
-      // console.log(reader);
-      // console.log("C");
-      // const base64Array = [];
-      // const waitArray = [];
-      // const updateArrays = (base64, num) => {
-      //   base64Array.push(base64);
-      //   waitArray.push(num);
-      // }
-      // reader.onloadend = function () {
-      //   console.log("don't fucking mess with me or I'll kill you");
-      //   const base64 = reader.result;
-      //   updateArrays(base64, 0);
-      //   console.log(base64);
-      // };
-      // if (waitArray.length > 0)
-      // {
-      //   console.log("Array of 64 base");
-      //   console.log(base64Array[0]);
-      //   this.setState({ image: base64Array[0] });
-      // }
-      // reader.readAsDataURL(blob);
-      // console.log(waitArray.length);
-
     }
     catch{
       console.log("Fail to use the function getProfilePicture");
@@ -355,10 +369,8 @@ export default class mainScreen extends Component {
 
   getCandPicture = async(val) => {
     try{
-      console.log("the profile picture email we're trying to get: " + val);
-      console.log("the access token for the email: " + global.accessToken);
       var sendInfo = {
-        email_str: val,
+        email_str: val.trim(),
         access_token_str: global.accessToken
       }
 
@@ -373,49 +385,8 @@ export default class mainScreen extends Component {
         fileReaderInstance.readAsDataURL(blob); 
         fileReaderInstance.onload = () => {
           const base64data = fileReaderInstance.result;   
-          console.log("The base 64 data:");             
-          console.log(base64data);
           this.setState({ candProfilePic: base64data });
        }
-
-      
-      // console.log("Response for get pic response:");
-      // const res = response._bodyBlob;
-      // console.log("Res me sage!!!");
-      // console.log(res);
-      // const temp = URL.createObjectURL(res);
-      // console.log("Create me sage!!!");
-
-      // this.setState({ image: temp });
-
-      // const blob = response._bodyBlob;
-      // console.log("F");
-      // console.log(blob);
-      // const reader = new FileReader();
-      // console.log("U");
-      // console.log(reader);
-      // console.log("C");
-      // const base64Array = [];
-      // const waitArray = [];
-      // const updateArrays = (base64, num) => {
-      //   base64Array.push(base64);
-      //   waitArray.push(num);
-      // }
-      // reader.onloadend = function () {
-      //   console.log("don't fucking mess with me or I'll kill you");
-      //   const base64 = reader.result;
-      //   updateArrays(base64, 0);
-      //   console.log(base64);
-      // };
-      // if (waitArray.length > 0)
-      // {
-      //   console.log("Array of 64 base");
-      //   console.log(base64Array[0]);
-      //   this.setState({ image: base64Array[0] });
-      // }
-      // reader.readAsDataURL(blob);
-      // console.log(waitArray.length);
-
     }
     catch{
       console.log("Fail to use the function getProfilePicture");
@@ -424,13 +395,10 @@ export default class mainScreen extends Component {
 
    getMatchPicture = async(val) => {
     try{
-      console.log("the profile picture email we're trying to get: " + val);
-      console.log("the access token for the email: " + global.accessToken);
       var sendInfo = {
-        email_str: val,
+        email_str: val.trim(),
         access_token_str: global.accessToken
       }
-
       let jsonObj = JSON.stringify(sendInfo);
 
       const response = await fetch('https://kindling-lp.herokuapp.com/api/get_profile_picture', 
@@ -446,45 +414,6 @@ export default class mainScreen extends Component {
           console.log(base64data);
           this.setState({ displayMatchProfilePicture: base64data });
        }
-
-      
-      // console.log("Response for get pic response:");
-      // const res = response._bodyBlob;
-      // console.log("Res me sage!!!");
-      // console.log(res);
-      // const temp = URL.createObjectURL(res);
-      // console.log("Create me sage!!!");
-
-      // this.setState({ image: temp });
-
-      // const blob = response._bodyBlob;
-      // console.log("F");
-      // console.log(blob);
-      // const reader = new FileReader();
-      // console.log("U");
-      // console.log(reader);
-      // console.log("C");
-      // const base64Array = [];
-      // const waitArray = [];
-      // const updateArrays = (base64, num) => {
-      //   base64Array.push(base64);
-      //   waitArray.push(num);
-      // }
-      // reader.onloadend = function () {
-      //   console.log("don't fucking mess with me or I'll kill you");
-      //   const base64 = reader.result;
-      //   updateArrays(base64, 0);
-      //   console.log(base64);
-      // };
-      // if (waitArray.length > 0)
-      // {
-      //   console.log("Array of 64 base");
-      //   console.log(base64Array[0]);
-      //   this.setState({ image: base64Array[0] });
-      // }
-      // reader.readAsDataURL(blob);
-      // console.log(waitArray.length);
-
     }
     catch{
       console.log("Fail to use the function getProfilePicture");
@@ -533,10 +462,7 @@ export default class mainScreen extends Component {
   }
 
   pushMatchesArray = async (val) => {
-    // this.setState({ myArray: [this.state.myArray, val] });
     this.setState({ matchesArray: [...this.state.matchesArray, val] });
-    // this.setState({ matchesArray: val });
-    // this.state.matchesArray.push(val);
   }
 
   resetMatchesArray = async() => {
